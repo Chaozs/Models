@@ -25,7 +25,7 @@ Thien Trandinh / trandit / 001420634
 
 #include "Object.h"
 
-float eye[] = {2, -0.1, 2};                 //initial camera location
+float eye[] = {2, 2, 2};                 //initial camera location
 float lookAt[] {0,0,0};                     //point camera is looking at
 float lightPos1[] = {-70, 38, -70, 1};      //initial light0 position
 float lightPos2[] = {70, 38, 70, 1};        //initial light1 positon
@@ -289,32 +289,37 @@ void keyboard(unsigned char key, int x, int y)
         objectList.push_back(selectedObject);
         break;
     }
-    case 's':
-        {
-            string fileNameSave = "";
-            bool hasDot;
-            while (fileNameSave == ""){
-                cout << "Enter a file name: ";
-                cin >> fileNameSave;
-                
-                if (fileNameSave.find('.') != string::npos) {
-                    fileNameSave = "";
-                    cout << "invalid file name.";    
-                }
-                else{
-                    fileSave(fileNameSave);
-                    cout << "File has been saved!\n";
-                    break;
-                }                                
-            }
     break;
+    case 's':
+    {
+        string fileNameSave = "";
+        bool hasDot;
+        while (fileNameSave == "")
+        {
+            cout << "Enter a file name: ";
+            cin >> fileNameSave;
+
+            if (fileNameSave.find('.') != string::npos)
+            {
+                fileNameSave = "";
+                cout << "invalid file name.";
+            }
+            else
+            {
+                fileSave(fileNameSave);
+                cout << "File has been saved!\n";
+                break;
+            }
+        }
+        break;
     }
-    
-	}
-glutPostRedisplay();
+
+    }
+    glutPostRedisplay();
 }
 
-void fileSave(string fileName){
+void fileSave(string fileName)
+{
     fileName = fileName + ".csv"; //creates it as a csv file
     const char *fileNam =  fileName.c_str(); // changes string to char so it can be supported by file handling
 
@@ -326,8 +331,8 @@ void fileSave(string fileName){
         Object* objP = *it;
         Object obj = *objP;
         fileSave << obj.getPosX() << "," <<  obj.getPosY() << "," <<  obj.getPosZ();
-	    fileSave << "," <<  obj.getOrientationX() << "," <<  obj.getOrientationY() << "," <<  obj.getOrientationZ();
-	    fileSave << "," << obj.getScale() << "\n";    
+        fileSave << "," <<  obj.getOrientationX() << "," <<  obj.getOrientationY() << "," <<  obj.getOrientationZ();
+        fileSave << "," << obj.getScale() << "\n";
     }
 
     fileSave.close();
@@ -392,15 +397,21 @@ void display(void)
     glPushMatrix();
     glTranslatef(0,-1,0);
     glScalef(1,0.01,1);
-    glutSolidCube(100); // draws scene
+    glutSolidCube(100); //draws plane
     glPopMatrix();
 
+    //draws all objects
     for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
     {
         Object* objP = *it;
         Object obj = *objP;
         obj.drawObject();
     }
+    if (selectedObject != 0)
+    {
+        selectedObject->drawWireframe();  //draw box around selected object
+    }
+
     glPopMatrix();
 
     glutSwapBuffers();

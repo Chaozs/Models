@@ -40,7 +40,7 @@ class Object
         float getOrientationZ();
         float getScale();
         void drawObject();
-        string getType();
+        void drawWireframe();
 
     private:
         float position[3];
