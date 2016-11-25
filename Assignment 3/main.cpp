@@ -287,6 +287,7 @@ void keyboard(unsigned char key, int x, int y)
     {
         selectedObject = new Object(Object::Torus);
         objectList.push_back(selectedObject);
+        break;
     }
     case 's':
         {
