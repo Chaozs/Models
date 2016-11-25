@@ -23,7 +23,7 @@ Thien Trandinh / trandit / 001420634
 
 #include "Object.h"
 
-float eye[] = {10, 10, 10};             //initial camera location
+float eye[] = {2, 2, 2};             //initial camera location
 float lookAt[] {0,0,0};                 //point camera is looking at
 float lightPos1[] = {-70, 38, -70, 1};  //initial light0 position
 float lightPos2[] = {70, 38, 70, 1};    //initial light1 positon
@@ -31,8 +31,74 @@ float xAxisRotation = 0;                //rotation around x axis
 float yAxisRotation = 0;                //rotation around y axis
 int sceneSize = 100;                    //total size of the scene
 float scaleFactor = 0.5/(sceneSize/50); //scales scene to fit the screen
+int materialCounter = 0;
 list<Object> objectList;
 Object *selectedObject;
+
+//Material structure
+struct Material {
+    float ambient[4];
+    float diffuse[4];
+    float specular[4];
+    float shininess;
+};
+//list 5 different materials
+Material redPlastic = {
+		{0.3, 0.0, 0.0, 1.0},
+        {0.6, 0.0, 0.0, 1.0},
+        {0.8, 0.6, 0.6, 1.0},
+        0.25
+    };
+    Material brass = {
+        {0.33f, 0.22f, 0.27f, 1.f},
+        {0.78f, 0.57f, 0.11f, 1.f},
+        {0.99f, 0.94f, 0.8f, 1.f},
+        0.22f
+    };
+    Material chrome = {
+        {0.25f, 0.25f, 0.25f, 1.f},
+        {0.4f, 0.4f, 0.4f, 1.f},
+        {0.75f, 0.75f, 0.75f, 1.f},
+        0.6f
+    };
+    Material silver = {
+        {0.2f, 0.2f, 0.2f, 1.f},
+        {0.51f, 0.51f, 0.51f, 1.f},
+        {0.51f, 0.51f, 0.51f, 1.f},
+        0.4f
+    };
+    Material greenRubber = {
+        {0.0f, 0.05f, 0.f, 1.f},
+        {0.4f, 0.5f, 0.4f, 1.f},
+        {0.04f, 0.7f, 0.04f, 1.f},
+        0.078f
+    };
+
+void setMaterial(int i)
+{
+	Material current;
+	switch(i){
+		case 0:
+			current = redPlastic;
+			break;
+		case 1:
+			current = brass;
+			break;	
+		case 2:
+			current = chrome;
+			break;
+		case 3:
+			current = silver;
+			break;
+		case 4:
+			current = greenRubber;
+			break;
+	}
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, current.ambient);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, current.diffuse);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, current.specular);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, current.shininess);
+}
 
 void special(int key, int x, int y)
 {
@@ -97,6 +163,30 @@ void keyboard(unsigned char key, int x, int y)
     case 's':
         lightPos1[1]-=8;
         break;
+    //set current object to current material
+    case 'm':
+        setMaterial(materialCounter);
+        break;
+    //set material to redPlastic
+    case '1':
+    	materialCounter = 0;
+    	break;
+    //set material to brass
+    case '2':
+    	materialCounter = 1;
+    	break;
+    //set material to chrome
+    case '3':
+        materialCounter = 2;
+    	break;
+    //set material to silver
+    case '4':
+        materialCounter = 3;
+    	break;
+    //set material to green rubber
+    case '5':
+        materialCounter = 4;
+    	break;
     case '6':
     {
         selectedObject = new Object(Object::Cube);
@@ -135,16 +225,17 @@ void keyboard(unsigned char key, int x, int y)
 //initialize
 void init(void)
 {
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
     glClearColor(0.3, 0.3, 0.3, 0);
-    glColor3f(1, 1, 1);
+
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
     gluPerspective(45, 1, 1, 1000);
+    setMaterial(0);
 
     //enable backface culling
     glFrontFace(GL_CCW);
@@ -160,9 +251,8 @@ void display(void)
     glLoadIdentity();
 
     //set light colours
-    float diff0[4] = {1.0, 0.1,0.1, 1};
-    float diff1[4] = {0.6,0.3,0.1,1};
-
+    float diff0[] = {0.1f, 0.1f, 0.1f, 1};   
+	float diff1[] = {0.1f, 0.1f, 0.1f, 1};  
     float amb0[4] = {0.8,0.3, 0.1, 1};
     float amb1[4] = {0.8,0.5, 0.1, 1};
 

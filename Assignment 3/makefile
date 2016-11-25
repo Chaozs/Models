@@ -26,7 +26,7 @@ PROGRAM_NAME= Modeller.x
 run: $(PROGRAM_NAME)
 	./$(PROGRAM_NAME)$(EXEXT)
 
-$(PROGRAM_NAME): main.o Object.o
+$(PROGRAM_NAME): main.cpp Object.cpp
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 clean:
