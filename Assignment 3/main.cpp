@@ -23,7 +23,7 @@ Thien Trandinh / trandit / 001420634
 
 #include "Object.h"
 
-float eye[] = {10, 10, 10};                 //initial camera location
+float eye[] = {2, 2, 2};                 //initial camera location
 float lookAt[] {0,0,0};                     //point camera is looking at
 float lightPos1[] = {-70, 38, -70, 1};      //initial light0 position
 float lightPos2[] = {70, 38, 70, 1};        //initial light1 positon
@@ -270,12 +270,12 @@ void display(void)
 
     //set light colours
 
-    float diff0[] = {0.1f, 0.1f, 0.1f, 1};
-    float diff1[] = {0.1f, 0.1f, 0.1f, 1};
-    float amb0[4] = {0.8,0.3, 0.1, 1};
-    float amb1[4] = {0.8,0.5, 0.1, 1};
-    float spec0[4] = {0.5f, 0.5f, 0.5f, 1};
-    float spec1[4] = {0.5f, 0.5f, 0.5f, 1};
+    float diff0[4] = {0.1f, 0.1f, 0.1f, 1};
+    float diff1[4] = {0.1f, 0.1f, 0.1f, 1};
+    float amb0[4] = {0.2f, 0.2f, 0.2f, 1};
+    float amb1[4] = {0.2f, 0.2f, 0.2f, 1};
+    float spec0[4] = {0.2f, 0.2f, 0.2f, 1};
+    float spec1[4] = {0.2f, 0.2f, 0.2f, 1};
 
     //set light position and properties
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diff0);
