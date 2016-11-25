@@ -37,6 +37,7 @@ int materialCounter = 0;
 list<Object*> objectList;                   //list of object addresses
 Object* selectedObject;                     //pointer to currently selected object
 void saveState(string fileName);
+void fileLoad(string fileName);
 
 //Material structure
 struct Material
@@ -305,33 +306,73 @@ void keyboard(unsigned char key, int x, int y)
     case '6':
     {
         selectedObject = new Object(Object::Cube);
+        selectedObject->storeMaterial(materialCounter);
         objectList.push_back(selectedObject);
     }
     break;
     case '7':
     {
         selectedObject = new Object(Object::Sphere);
+        selectedObject->storeMaterial(materialCounter);
         objectList.push_back(selectedObject);
     }
     break;
     case '8':
     {
         selectedObject = new Object(Object::Teapot);
+        selectedObject->storeMaterial(materialCounter);
         objectList.push_back(selectedObject);
     }
     break;
     case '9':
     {
         selectedObject = new Object(Object::Cone);
+        selectedObject->storeMaterial(materialCounter);
         objectList.push_back(selectedObject);
     }
     break;
     case '0':
     {
         selectedObject = new Object(Object::Torus);
+        selectedObject->storeMaterial(materialCounter);
         objectList.push_back(selectedObject);
         break;
     }
+    case 'l':
+    {
+        string fileNameLoad = "";
+        while (fileNameLoad == "")
+        {
+            cout << "Which file would you like to load?: ";
+            cin >> fileNameLoad;
+            if (fileNameLoad.find('.') != string::npos)
+            {
+                fileNameLoad = "";
+                cout << "Invalid file name. Try again and make sure you haven't added any '.'s\n";
+            }
+            else
+            {
+                fileNameLoad = fileNameLoad + ".csv";
+                if (FILE *file = fopen(fileNameLoad.c_str(), "r"))
+                {
+
+                    fclose(file);
+                    objectList.clear();
+                    fileLoad(fileNameLoad);
+                    cout << "File has been loaded!\n";
+                    break;
+                }
+                else
+                {
+                    cout << "File doesn't exist\n";
+                    break;
+                }
+            }
+        }
+    }
+    break;
+
+
     break;
     }
     glutPostRedisplay();
@@ -356,6 +397,108 @@ void saveState(string fileName)
     }
 
     saveState.close();
+}
+
+void fileLoad(string fileName)
+{
+    /* changes string to char and opens file for loading*/
+    const char *fileNam =  fileName.c_str();
+    ifstream fileLoad;
+    fileLoad.open (fileNam);
+    string line;
+
+    /*variable declaration*/
+    int type, mat;
+    float posX, posY, posZ, oriX, oriY, oriZ, scale;
+    string strType, strMat, strPosX, strPosY, strPosZ, strOriX, strOriY, strOriZ, strScale;
+
+    while(getline(fileLoad,line))
+    {
+        stringstream linestr(line);
+        if (getline(linestr, strType, ',') &&
+                getline(linestr, strMat, ',') &&
+                getline(linestr, strPosX, ',') &&
+                getline(linestr, strPosY, ',') &&
+                getline(linestr, strPosZ, ',') &&
+                getline(linestr, strOriX, ',') &&
+                getline(linestr, strOriY, ',') &&
+                getline(linestr, strOriZ, ',') &&
+                getline(linestr, strScale, ','))
+        {
+
+            /*changes string type to the desired types (int, and floats for point3D) */
+            type = atoi(strType.c_str());
+            mat = atoi(strMat.c_str());
+            posX = atof(strPosX.c_str());
+            posY = atof(strPosY.c_str());
+            posZ = atof(strPosZ.c_str());
+            oriX = atof(strOriX.c_str());
+            oriY = atof(strOriX.c_str());
+            oriZ = atof(strOriZ.c_str());
+            scale = atof(strScale.c_str());
+
+
+            switch(type)
+            {
+            case '0':
+            {
+                selectedObject = new Object(Object::Cube);
+                selectedObject->storeMaterial(mat);
+                selectedObject->setPosition(posX, posY, posZ);
+                selectedObject->setOrientation(oriX, oriY, oriZ);
+                selectedObject->setScale(scale);
+                objectList.push_back(selectedObject);
+            }
+            break;
+            case '1':
+            {
+                selectedObject = new Object(Object::Sphere);
+                selectedObject->storeMaterial(mat);
+                selectedObject->setPosition(posX, posY, posZ);
+                selectedObject->setOrientation(oriX, oriY, oriZ);
+                selectedObject->setScale(scale);
+                objectList.push_back(selectedObject);
+            }
+            break;
+            case '2':
+            {
+                selectedObject = new Object(Object::Teapot);
+                selectedObject->storeMaterial(mat);
+                selectedObject->setPosition(posX, posY, posZ);
+                selectedObject->setOrientation(oriX, oriY, oriZ);
+                selectedObject->setScale(scale);
+                objectList.push_back(selectedObject);
+            }
+            break;
+            case '3':
+            {
+                selectedObject = new Object(Object::Cone);
+                selectedObject->storeMaterial(mat);
+                selectedObject->setPosition(posX, posY, posZ);
+                selectedObject->setOrientation(oriX, oriY, oriZ);
+                selectedObject->setScale(scale);
+                objectList.push_back(selectedObject);
+            }
+            break;
+            case '4':
+            {
+                selectedObject = new Object(Object::Torus);
+                selectedObject->storeMaterial(mat);
+                selectedObject->setPosition(posX, posY, posZ);
+                selectedObject->setOrientation(oriX, oriY, oriZ);
+                selectedObject->setScale(scale);
+                objectList.push_back(selectedObject);
+            }
+            break;
+            }
+
+
+        }
+    }
+
+
+    fileLoad.close();
+
 }
 
 //initialize

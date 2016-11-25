@@ -33,6 +33,7 @@ Object::Object(ObjectType t)
     objectScale = 1;
 }
 
+
 //store material: where 0=redPlastic, 1=brass, 2=chrome, 3=silver, 4=greenrubber
 void Object::storeMaterial(int mat){
     material = mat;
