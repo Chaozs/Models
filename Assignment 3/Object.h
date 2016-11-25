@@ -19,6 +19,7 @@ Thien Trandinh / trandit / 001420634
 #endif
 
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -30,10 +31,13 @@ class Object
         void setPosition(float,float,float);
         void setOrientation(float,float,float);
         void setScale(float);
-        vector<float> getPosition();
+        float getPosX();
+        float getPosY();
+        float getPosZ();
         vector<float> getOrientation();
         float getScale();
         void drawObject();
+        string getType();
 
     private:
         float position[3];
@@ -42,8 +46,6 @@ class Object
         //TDO Bounding planes
         float objectScale;
         ObjectType type;
-
-
 };
 
 #endif

@@ -9,6 +9,7 @@ Thien Trandinh / trandit / 001420634
 #include <stdlib.h>
 #include <list>
 #include <algorithm>
+#include <iostream>
 
 #ifdef __APPLE__
 #  include <OpenGL/gl.h>
@@ -16,13 +17,13 @@ Thien Trandinh / trandit / 001420634
 #  include <GLUT/glut.h>
 #else
 #  include <GL/gl.h>
-#  include <GL/glu.h>
+#  include <GL/glut.h>
 #  include <GL/freeglut.h>
 #endif
 
 #include "Object.h"
 
-float eye[] = {10, 10, 10};          //initial camera location
+float eye[] = {10, 10, 10};             //initial camera location
 float lookAt[] {0,0,0};                 //point camera is looking at
 float lightPos1[] = {-70, 38, -70, 1};  //initial light0 position
 float lightPos2[] = {70, 38, 70, 1};    //initial light1 positon
@@ -31,31 +32,42 @@ float yAxisRotation = 0;                //rotation around y axis
 int sceneSize = 100;                    //total size of the scene
 float scaleFactor = 0.5/(sceneSize/50); //scales scene to fit the screen
 list<Object> objectList;
-Object selectedObject(Object::Cube);
-
+Object *selectedObject;
 
 void special(int key, int x, int y)
 {
-    switch(key)
+    if (key == GLUT_KEY_LEFT && glutGetModifiers() == GLUT_ACTIVE_CTRL)
     {
-    case GLUT_KEY_LEFT:
         yAxisRotation--;        //rotate y-axis in negative direction
-        break;
-    case GLUT_KEY_RIGHT:
+    }
+    else if (key == GLUT_KEY_RIGHT && glutGetModifiers() == GLUT_ACTIVE_CTRL)
+    {
         yAxisRotation++;        //rotate y-axis in positive direction
-        break;
-    case GLUT_KEY_UP:
-        if (xAxisRotation < 45)  //prevents scene from flipping
+    }
+    else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_CTRL && xAxisRotation < 45)
+    {
+        xAxisRotation++;        //rotate x-axis in positive direction
+    }
+    else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_CTRL && xAxisRotation > -45)
+    {
+        xAxisRotation--;        //rotate x-axis in negative direction
+    }
+    else if (key == GLUT_KEY_LEFT)
+    {
+        if (selectedObject != 0)
         {
-            xAxisRotation++;    //rotate x-axis in positive direction
+            cout << "Object is selected. Type = " << selectedObject->getType() << endl;
+            selectedObject->setPosition(selectedObject->getPosX()-1, selectedObject->getPosY(), selectedObject->getPosZ());
         }
-        break;
-    case GLUT_KEY_DOWN:
-        if (xAxisRotation > -45)    // prevents scene from flipping
-        {
-            xAxisRotation--;    //rotate x-axis in negative direction
-        }
-        break;
+    }
+    else if (key == GLUT_KEY_RIGHT)
+    {
+    }
+    else if (key == GLUT_KEY_UP)
+    {
+    }
+    else if (key == GLUT_KEY_DOWN)
+    {
     }
     glutPostRedisplay();
 }
@@ -87,42 +99,38 @@ void keyboard(unsigned char key, int x, int y)
         break;
     case '6':
     {
-        Object cube(Object::Cube);
-        objectList.push_back(cube);
-        selectedObject = cube;
+        selectedObject = new Object(Object::Cube);
+        objectList.push_back(*selectedObject);
     }
     break;
     case '7':
     {
-        Object sphere(Object::Sphere);
-        objectList.push_back(sphere);
-        selectedObject = sphere;
+        selectedObject = new Object(Object::Sphere);
+        objectList.push_back(*selectedObject);
     }
     break;
     case '8':
     {
-        Object teapot(Object::Teapot);
-        objectList.push_back(teapot);
-        selectedObject = teapot;
+        selectedObject = new Object(Object::Teapot);
+        objectList.push_back(*selectedObject);
     }
     break;
     case '9':
     {
-        Object cone(Object::Cone);
-        objectList.push_back(cone);
-        selectedObject = cone;
+        selectedObject = new Object(Object::Cone);
+        objectList.push_back(*selectedObject);
     }
     break;
     case '0':
     {
-        Object torus(Object::Torus);
-        objectList.push_back(torus);
-        selectedObject = torus;
+        selectedObject = new Object(Object::Torus);
+        objectList.push_back(*selectedObject);
     }
     break;
     }
     glutPostRedisplay();
 }
+
 
 //initialize
 void init(void)
@@ -196,9 +204,25 @@ void display(void)
     glutSwapBuffers();
 }
 
+/* prints control instructions to console */
+void printInstructions()
+{
+    cout << "MODELLER" << endl;
+    cout << "Susan Yuen / yuens2 / 001416198" << endl;
+    cout << "Thien Trandinh / trandit / 001420634" << endl << endl;
+    cout << "*CTRL + ARROW KEYS = control camera movement" << endl;
+    cout << "*ARROW KEYS = control translation of currently selected object" << endl;
+    cout << "q or ESC = exits the program" << endl;
+    cout << "WASD = control movement of light source" << endl;
+    cout << "KEYS 6 to 0 = creates a cube, sphere, teapot, cone, torus respectively" << endl;
+
+}
+
 //main method
 int main(int argc, char** argv)
 {
+    printInstructions();
+
     glutInit(&argc, argv);              //starts up GLUT
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 

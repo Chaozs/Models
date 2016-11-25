@@ -47,13 +47,19 @@ void Object::setOrientation(float x, float y, float z)
     orientation[2] = z;
 }
 
-vector<float> Object::getPosition()
+float Object::getPosX()
 {
-    vector<float> p;
-    p[0] = position[0];
-    p[1] = position[1];
-    p[2] = position[2];
-    return p;
+    return position[0];
+}
+
+float Object::getPosY()
+{
+    return position[1];
+}
+
+float Object::getPosZ()
+{
+    return position[2];
 }
 
 vector<float> Object::getOrientation()
@@ -116,4 +122,21 @@ void Object::drawObject()
         break;
     }
     glPopMatrix();
+}
+
+string Object::getType()
+{
+    switch(type)
+    {
+    case Cube:
+        return "cube";
+    case Sphere:
+        return "sphere";
+    case Teapot:
+        return "teapot";
+    case Cone:
+        return "cone";
+    case Torus:
+        return "torus";
+    }
 }
