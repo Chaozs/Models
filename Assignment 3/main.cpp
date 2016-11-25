@@ -43,7 +43,7 @@ struct Material {
     float shininess;
 };
 //list 5 different materials
-Material redPlastic = {
+	Material redPlastic = {
 		{0.3, 0.0, 0.0, 1.0},
         {0.6, 0.0, 0.0, 1.0},
         {0.8, 0.6, 0.6, 1.0},
@@ -238,7 +238,7 @@ void init(void)
     setMaterial(0);
 
     //enable backface culling
-    glFrontFace(GL_CCW);
+    glFrontFace(GL_CW);
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
 }
@@ -251,13 +251,13 @@ void display(void)
     glLoadIdentity();
 
     //set light colours
-    float diff0[] = {0.1f, 0.1f, 0.1f, 1};   
-	float diff1[] = {0.1f, 0.1f, 0.1f, 1};  
-    float amb0[4] = {0.8,0.3, 0.1, 1};
-    float amb1[4] = {0.8,0.5, 0.1, 1};
+    float diff0[] = {0.5f, 0.5f, 0.5f, 1};   
+	float diff1[] = {0.5f, 0.5f, 0.5f, 1};     
+    float amb0[4] = {0.f, 0.f, 0.f, 1}; 
+    float amb1[4] = {0.f, 0.f, 0.f, 1}; 
 
-    float spec0[4] = {0.5,0.3, 0.8, 1};
-    float spec1[4] = {0.5,0.3, 0.8, 1};
+    float spec0[4] = {0.5f, 0.5f, 0.5f, 1}; 
+    float spec1[4] = {0.5f, 0.5f, 0.5f, 1}; 
 
     //set light position and properties
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diff0);
