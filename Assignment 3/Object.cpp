@@ -33,6 +33,38 @@ Object::Object(ObjectType t)
     objectScale = 1;
 }
 
+//store material: where 0=redPlastic, 1=brass, 2=chrome, 3=silver, 4=greenrubber
+void Object::storeMaterial(int mat){
+    material = mat;
+}
+
+//return material index number
+int Object::getMaterial(){
+    return material;
+}
+
+//return the objectType as an int, where 0=cube, 1=sphere, 2=teapot, 3=cone, 4=torus
+int Object::getType(){
+    switch(type)
+    {
+    case Cube:
+        return 0;
+        break;
+    case Sphere:
+        return 1;
+        break;
+    case Teapot:
+        return 2;
+        break;
+    case Cone:
+        return 3;
+        break;
+    case Torus:
+        return 4;
+        break;
+    }
+}
+
 void Object::setPosition(float x, float y, float z)
 {
     position[0] = x;

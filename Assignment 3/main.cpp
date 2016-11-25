@@ -36,7 +36,7 @@ float scaleFactor = 0.5/(sceneSize/50);     //scales scene to fit the screen
 int materialCounter = 0;
 list<Object*> objectList;                   //list of object addresses
 Object* selectedObject;                     //pointer to currently selected object
-void fileSave(string fileName);
+void saveState(string fileName);
 
 //Material structure
 struct Material
@@ -270,16 +270,17 @@ void keyboard(unsigned char key, int x, int y)
                 }
                 else
                 {
-                    fileSave(fileNameSave);
+                    saveState(fileNameSave);
                     cout << "File has been saved!\n";
                     break;
                 }
             }
+
         }
         break;
     //set current object to current material
     case 'm':
-        setMaterial(materialCounter);
+        selectedObject->storeMaterial(materialCounter);
         break;
     //set material to redPlastic
     case '1':
@@ -336,24 +337,25 @@ void keyboard(unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
-void fileSave(string fileName)
+void saveState(string fileName)
 {
-    fileName = fileName + ".csv"; //creates it as a csv file
-    const char *fileNam =  fileName.c_str(); // changes string to char so it can be supported by file handling
+    fileName = fileName + ".csv"; //creates csv file with user inputted name
+    const char *fileNam =  fileName.c_str(); // changes string to char
 
-    ofstream fileSave;
-    fileSave.open (fileNam);
+    ofstream saveState;
+    saveState.open (fileNam);
 
     for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
     {
         Object* objP = *it;
         Object obj = *objP;
-        fileSave << obj.getPosX() << "," <<  obj.getPosY() << "," <<  obj.getPosZ();
-        fileSave << "," <<  obj.getOrientationX() << "," <<  obj.getOrientationY() << "," <<  obj.getOrientationZ();
-        fileSave << "," << obj.getScale() << "\n";
+        saveState << obj.getType() << "," << obj.getMaterial();
+        saveState << "," << obj.getPosX() << "," <<  obj.getPosY() << "," <<  obj.getPosZ();
+        saveState << "," << obj.getOrientationX() << "," <<  obj.getOrientationY() << "," <<  obj.getOrientationZ();
+        saveState << "," << obj.getScale() << "\n";
     }
 
-    fileSave.close();
+    saveState.close();
 }
 
 //initialize
@@ -422,6 +424,7 @@ void display(void)
     {
         Object* objP = *it;
         Object obj = *objP;
+        setMaterial(obj.getMaterial());
         obj.drawObject();
     }
     if (selectedObject != 0)
