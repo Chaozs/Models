@@ -23,81 +23,88 @@ Thien Trandinh / trandit / 001420634
 
 #include "Object.h"
 
-float eye[] = {2, 2, 2};             //initial camera location
-float lookAt[] {0,0,0};                 //point camera is looking at
-float lightPos1[] = {-70, 38, -70, 1};  //initial light0 position
-float lightPos2[] = {70, 38, 70, 1};    //initial light1 positon
-float xAxisRotation = 0;                //rotation around x axis
-float yAxisRotation = 0;                //rotation around y axis
-int sceneSize = 100;                    //total size of the scene
-float scaleFactor = 0.5/(sceneSize/50); //scales scene to fit the screen
+float eye[] = {10, 10, 10};                 //initial camera location
+float lookAt[] {0,0,0};                     //point camera is looking at
+float lightPos1[] = {-70, 38, -70, 1};      //initial light0 position
+float lightPos2[] = {70, 38, 70, 1};        //initial light1 positon
+float xAxisRotation = 0;                    //rotation around x axis
+float yAxisRotation = 0;                    //rotation around y axis
+int sceneSize = 100;                        //total size of the scene
+float scaleFactor = 0.5/(sceneSize/50);     //scales scene to fit the screen
 int materialCounter = 0;
-list<Object> objectList;
-Object *selectedObject;
+list<Object*> objectList;                   //list of object addresses
+Object* selectedObject;                     //pointer to currently selected object
 
 //Material structure
-struct Material {
+struct Material
+{
     float ambient[4];
     float diffuse[4];
     float specular[4];
     float shininess;
 };
 //list 5 different materials
-Material redPlastic = {
-		{0.3, 0.0, 0.0, 1.0},
-        {0.6, 0.0, 0.0, 1.0},
-        {0.8, 0.6, 0.6, 1.0},
-        0.25
-    };
-    Material brass = {
-        {0.33f, 0.22f, 0.27f, 1.f},
-        {0.78f, 0.57f, 0.11f, 1.f},
-        {0.99f, 0.94f, 0.8f, 1.f},
-        0.22f
-    };
-    Material chrome = {
-        {0.25f, 0.25f, 0.25f, 1.f},
-        {0.4f, 0.4f, 0.4f, 1.f},
-        {0.75f, 0.75f, 0.75f, 1.f},
-        0.6f
-    };
-    Material silver = {
-        {0.2f, 0.2f, 0.2f, 1.f},
-        {0.51f, 0.51f, 0.51f, 1.f},
-        {0.51f, 0.51f, 0.51f, 1.f},
-        0.4f
-    };
-    Material greenRubber = {
-        {0.0f, 0.05f, 0.f, 1.f},
-        {0.4f, 0.5f, 0.4f, 1.f},
-        {0.04f, 0.7f, 0.04f, 1.f},
-        0.078f
-    };
+Material redPlastic =
+{
+    {0.3, 0.0, 0.0, 1.0},
+    {0.6, 0.0, 0.0, 1.0},
+    {0.8, 0.6, 0.6, 1.0},
+    0.25
+};
+Material brass =
+{
+    {0.33f, 0.22f, 0.27f, 1.f},
+    {0.78f, 0.57f, 0.11f, 1.f},
+    {0.99f, 0.94f, 0.8f, 1.f},
+    0.22f
+};
+Material chrome =
+{
+    {0.25f, 0.25f, 0.25f, 1.f},
+    {0.4f, 0.4f, 0.4f, 1.f},
+    {0.75f, 0.75f, 0.75f, 1.f},
+    0.6f
+};
+Material silver =
+{
+    {0.2f, 0.2f, 0.2f, 1.f},
+    {0.51f, 0.51f, 0.51f, 1.f},
+    {0.51f, 0.51f, 0.51f, 1.f},
+    0.4f
+};
+Material greenRubber =
+{
+    {0.0f, 0.05f, 0.f, 1.f},
+    {0.4f, 0.5f, 0.4f, 1.f},
+    {0.04f, 0.7f, 0.04f, 1.f},
+    0.078f
+};
 
 void setMaterial(int i)
 {
-	Material current;
-	switch(i){
-		case 0:
-			current = redPlastic;
-			break;
-		case 1:
-			current = brass;
-			break;	
-		case 2:
-			current = chrome;
-			break;
-		case 3:
-			current = silver;
-			break;
-		case 4:
-			current = greenRubber;
-			break;
-	}
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, current.ambient);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, current.diffuse);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, current.specular);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, current.shininess);
+    Material current;
+    switch(i)
+    {
+    case 0:
+        current = redPlastic;
+        break;
+    case 1:
+        current = brass;
+        break;
+    case 2:
+        current = chrome;
+        break;
+    case 3:
+        current = silver;
+        break;
+    case 4:
+        current = greenRubber;
+        break;
+    }
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, current.ambient);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, current.diffuse);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, current.specular);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, current.shininess);
 }
 
 void special(int key, int x, int y)
@@ -120,20 +127,31 @@ void special(int key, int x, int y)
     }
     else if (key == GLUT_KEY_LEFT)
     {
-        if (selectedObject != 0)
+        if (selectedObject != 0 && selectedObject->getPosX() > -50)    //if an object is selected
         {
-            cout << "Object is selected. Type = " << selectedObject->getType() << endl;
-            selectedObject->setPosition(selectedObject->getPosX()-1, selectedObject->getPosY(), selectedObject->getPosZ());
+            selectedObject->setPosition(selectedObject->getPosX()-0.3, selectedObject->getPosY(), selectedObject->getPosZ()); //translate object in -x direction
         }
     }
     else if (key == GLUT_KEY_RIGHT)
     {
+        if (selectedObject != 0 && selectedObject->getPosX() < 50)    //if an object is selected
+        {
+            selectedObject->setPosition(selectedObject->getPosX()+0.3, selectedObject->getPosY(), selectedObject->getPosZ()); //translate object in +x direction
+        }
     }
     else if (key == GLUT_KEY_UP)
     {
+        if (selectedObject != 0 && selectedObject->getPosZ() < 50)    //if an object is selected
+        {
+            selectedObject->setPosition(selectedObject->getPosX(), selectedObject->getPosY(), selectedObject->getPosZ()+0.3); //translate object in +z direction
+        }
     }
     else if (key == GLUT_KEY_DOWN)
     {
+        if (selectedObject != 0 && selectedObject->getPosZ() > -50)    //if an object is selected
+        {
+            selectedObject->setPosition(selectedObject->getPosX(), selectedObject->getPosY(), selectedObject->getPosZ()-0.3); //translate object in -z direction
+        }
     }
     glutPostRedisplay();
 }
@@ -169,52 +187,52 @@ void keyboard(unsigned char key, int x, int y)
         break;
     //set material to redPlastic
     case '1':
-    	materialCounter = 0;
-    	break;
+        materialCounter = 0;
+        break;
     //set material to brass
     case '2':
-    	materialCounter = 1;
-    	break;
+        materialCounter = 1;
+        break;
     //set material to chrome
     case '3':
         materialCounter = 2;
-    	break;
+        break;
     //set material to silver
     case '4':
         materialCounter = 3;
-    	break;
+        break;
     //set material to green rubber
     case '5':
         materialCounter = 4;
-    	break;
+        break;
     case '6':
     {
         selectedObject = new Object(Object::Cube);
-        objectList.push_back(*selectedObject);
+        objectList.push_back(selectedObject);
     }
     break;
     case '7':
     {
         selectedObject = new Object(Object::Sphere);
-        objectList.push_back(*selectedObject);
+        objectList.push_back(selectedObject);
     }
     break;
     case '8':
     {
         selectedObject = new Object(Object::Teapot);
-        objectList.push_back(*selectedObject);
+        objectList.push_back(selectedObject);
     }
     break;
     case '9':
     {
         selectedObject = new Object(Object::Cone);
-        objectList.push_back(*selectedObject);
+        objectList.push_back(selectedObject);
     }
     break;
     case '0':
     {
         selectedObject = new Object(Object::Torus);
-        objectList.push_back(*selectedObject);
+        objectList.push_back(selectedObject);
     }
     break;
     }
@@ -251,8 +269,8 @@ void display(void)
     glLoadIdentity();
 
     //set light colours
-    float diff0[] = {0.1f, 0.1f, 0.1f, 1};   
-	float diff1[] = {0.1f, 0.1f, 0.1f, 1};  
+    float diff0[] = {0.1f, 0.1f, 0.1f, 1};
+    float diff1[] = {0.1f, 0.1f, 0.1f, 1};
     float amb0[4] = {0.8,0.3, 0.1, 1};
     float amb1[4] = {0.8,0.5, 0.1, 1};
 
@@ -284,9 +302,10 @@ void display(void)
     glutSolidCube(100); // draws scene
     glPopMatrix();
 
-    for(list<Object>::iterator it=objectList.begin(); it != objectList.end(); ++it)
+    for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
     {
-        Object obj = *it;
+        Object* objP = *it;
+        Object obj = *objP;
         obj.drawObject();
     }
     glPopMatrix();

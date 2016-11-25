@@ -20,6 +20,7 @@ Thien Trandinh / trandit / 001420634
 
 #include <vector>
 #include <string>
+#include <iostream>
 
 using namespace std;
 
