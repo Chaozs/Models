@@ -28,7 +28,7 @@ Thien Trandinh / trandit / 001420634
 float eye[] = {2, 2, 2};                 //initial camera location
 float lookAt[] {0,0,0};                     //point camera is looking at
 float light0Pos[] = {-70, 38, -70, 1};      //initial light0 position
-float light1Pos[] = {70, 38, 70, 1};        //initial light1 positon
+float light1Pos[] = {40, 38, 70, 1};        //initial light1 positon
 float xAxisRotation = 0;                    //rotation around x axis
 float yAxisRotation = 0;                    //rotation around y axis
 int sceneSize = 100;                        //total size of the scene
@@ -218,26 +218,39 @@ void keyboard(unsigned char key, int x, int y)
     case 27:
         exit(0);    //exits program is q or ESC is pressed
         break;
+    //detect shift key (capital letters)
+    case 'A':
+        light1Pos[0]-=2;       //move light1 left
+        break;
+    case 'D':
+        light1Pos[0]+=2;       //move light1 right
+        break;
+    case 'W':
+        light1Pos[1]+=2;       //move light1 up
+        break;
+    case 'S':
+        light1Pos[1]-=2;       //move light1 down
+        break;
     case 'a':
-        if (glutGetModifiers() == GLUT_ACTIVE_ALT)
+        if (glutGetModifiers() & GLUT_ACTIVE_ALT)
         {
             light0Pos[0]-=2;    //move light0 left
         }
         break;
     case 'd':
-        if (glutGetModifiers() == GLUT_ACTIVE_ALT)
+        if (glutGetModifiers() & GLUT_ACTIVE_ALT)
         {
             light0Pos[0]+=2;    //move light0 right
         }
         break;
     case 'w':
-        if (glutGetModifiers() == GLUT_ACTIVE_ALT)
+        if (glutGetModifiers() & GLUT_ACTIVE_ALT)
         {
             light0Pos[1]+=2;    //move light0 up
         }
         break;
     case 's':
-        if (glutGetModifiers() == GLUT_ACTIVE_ALT)
+        if (glutGetModifiers() & GLUT_ACTIVE_ALT)
         {
             light0Pos[1]-=2;    //move light0 down
         }
@@ -372,9 +385,8 @@ void display(void)
     glLoadIdentity();
 
     //set light colours
-
-    float diff0[4] = {0.1f, 0.1f, 0.1f, 1};
-    float diff1[4] = {0.1f, 0.1f, 0.1f, 1};
+    float diff0[4] = {0, 0.2, 1, 1};            //blue light (light0)
+    float diff1[4] = {1, 0.6, 0, 1};            //amber light (light1)
     float amb0[4] = {0.2f, 0.2f, 0.2f, 1};
     float amb1[4] = {0.2f, 0.2f, 0.2f, 1};
     float spec0[4] = {0.2f, 0.2f, 0.2f, 1};
@@ -433,7 +445,8 @@ void printInstructions()
     cout << "*SHIFT + UP ARROW/DOWN ARROW = manipulate scale of currently selected object" << endl;
     cout << "*ALT + ARROW KEYS/PAGE UP/PAGE DOWN = control rotation of currently selected object" << endl;
     cout << "q or ESC = exits the program" << endl;
-    cout << "ALT + WASD = control movement of light source" << endl;
+    cout << "ALT + wasd = control movement of light source 1" << endl;
+    cout << "SHIFT + wasd = control movement of light source 2" << endl;
     cout << "s = saves the current object scene as a .txt file" << endl;
     cout << "KEYS 6 to 0 = creates a cube, sphere, teapot, cone, torus respectively" << endl;
 
