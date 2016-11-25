@@ -10,6 +10,8 @@ Thien Trandinh / trandit / 001420634
 #include <list>
 #include <algorithm>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 #ifdef __APPLE__
 #  include <OpenGL/gl.h>
@@ -34,6 +36,7 @@ float scaleFactor = 0.5/(sceneSize/50);     //scales scene to fit the screen
 int materialCounter = 0;
 list<Object*> objectList;                   //list of object addresses
 Object* selectedObject;                     //pointer to currently selected object
+void fileSave(string fileName);
 
 //Material structure
 struct Material
@@ -216,22 +219,22 @@ void keyboard(unsigned char key, int x, int y)
         exit(0);    //exits program is q or ESC is pressed
         break;
     //move light0 left
-    case 'a':
-        ;
-        lightPos1[0]-=8;
-        break;
-    //move light0 right
-    case 'd':
-        lightPos1[0]+=8;
-        break;
-    //move light0 up
-    case 'w':
-        lightPos1[1]+=8;
-        break;
-    //move light0 down
-    case 's':
-        lightPos1[1]-=8;
-        break;
+    // case 'a':
+    //     ;
+    //     lightPos1[0]-=8;
+    //     break;
+    // //move light0 right
+    // case 'd':
+    //     lightPos1[0]+=8;
+    //     break;
+    // //move light0 up
+    // case 'w':
+    //     lightPos1[1]+=8;
+    //     break;
+    // //move light0 down
+    // case 's':
+    //     lightPos1[1]-=8;
+    //     break;
     //set current object to current material
     case 'm':
         setMaterial(materialCounter);
@@ -285,11 +288,49 @@ void keyboard(unsigned char key, int x, int y)
         selectedObject = new Object(Object::Torus);
         objectList.push_back(selectedObject);
     }
+    case 's':
+        {
+            string fileNameSave = "";
+            bool hasDot;
+            while (fileNameSave == ""){
+                cout << "Enter a file name: ";
+                cin >> fileNameSave;
+                
+                if (fileNameSave.find('.') != string::npos) {
+                    fileNameSave = "";
+                    cout << "invalid file name.";    
+                }
+                else{
+                    fileSave(fileNameSave);
+                    cout << "File has been saved!\n";
+                    break;
+                }                                
+            }
     break;
     }
-    glutPostRedisplay();
+    
+	}
+glutPostRedisplay();
 }
 
+void fileSave(string fileName){
+    fileName = fileName + ".csv"; //creates it as a csv file
+    const char *fileNam =  fileName.c_str(); // changes string to char so it can be supported by file handling
+
+    ofstream fileSave;
+    fileSave.open (fileNam);
+
+    for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
+    {
+        Object* objP = *it;
+        Object obj = *objP;
+        fileSave << obj.getPosX() << "," <<  obj.getPosY() << "," <<  obj.getPosZ();
+	    fileSave << "," <<  obj.getOrientationX() << "," <<  obj.getOrientationY() << "," <<  obj.getOrientationZ();
+	    fileSave << "," << obj.getScale() << "\n";    
+    }
+
+    fileSave.close();
+}
 
 //initialize
 void init(void)
