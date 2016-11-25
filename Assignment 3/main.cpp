@@ -27,8 +27,8 @@ Thien Trandinh / trandit / 001420634
 
 float eye[] = {2, 2, 2};                 //initial camera location
 float lookAt[] {0,0,0};                     //point camera is looking at
-float lightPos1[] = {-70, 38, -70, 1};      //initial light0 position
-float lightPos2[] = {70, 38, 70, 1};        //initial light1 positon
+float light0Pos[] = {-70, 38, -70, 1};      //initial light0 position
+float light1Pos[] = {70, 38, 70, 1};        //initial light1 positon
 float xAxisRotation = 0;                    //rotation around x axis
 float yAxisRotation = 0;                    //rotation around y axis
 int sceneSize = 100;                        //total size of the scene
@@ -218,23 +218,52 @@ void keyboard(unsigned char key, int x, int y)
     case 27:
         exit(0);    //exits program is q or ESC is pressed
         break;
-    //move light0 left
-    // case 'a':
-    //     ;
-    //     lightPos1[0]-=8;
-    //     break;
-    // //move light0 right
-    // case 'd':
-    //     lightPos1[0]+=8;
-    //     break;
-    // //move light0 up
-    // case 'w':
-    //     lightPos1[1]+=8;
-    //     break;
-    // //move light0 down
-    // case 's':
-    //     lightPos1[1]-=8;
-    //     break;
+    case 'a':
+        if (glutGetModifiers() == GLUT_ACTIVE_ALT)
+        {
+            light0Pos[0]-=2;    //move light0 left
+        }
+        break;
+    case 'd':
+        if (glutGetModifiers() == GLUT_ACTIVE_ALT)
+        {
+            light0Pos[0]+=2;    //move light0 right
+        }
+        break;
+    case 'w':
+        if (glutGetModifiers() == GLUT_ACTIVE_ALT)
+        {
+            light0Pos[1]+=2;    //move light0 up
+        }
+        break;
+    case 's':
+        if (glutGetModifiers() == GLUT_ACTIVE_ALT)
+        {
+            light0Pos[1]-=2;    //move light0 down
+        }
+        else
+        {
+            string fileNameSave = "";
+            bool hasDot;
+            while (fileNameSave == "")
+            {
+                cout << "Enter a file name: ";
+                cin >> fileNameSave;
+
+                if (fileNameSave.find('.') != string::npos)
+                {
+                    fileNameSave = "";
+                    cout << "invalid file name.";
+                }
+                else
+                {
+                    fileSave(fileNameSave);
+                    cout << "File has been saved!\n";
+                    break;
+                }
+            }
+        }
+        break;
     //set current object to current material
     case 'm':
         setMaterial(materialCounter);
@@ -290,30 +319,6 @@ void keyboard(unsigned char key, int x, int y)
         break;
     }
     break;
-    case 's':
-    {
-        string fileNameSave = "";
-        bool hasDot;
-        while (fileNameSave == "")
-        {
-            cout << "Enter a file name: ";
-            cin >> fileNameSave;
-
-            if (fileNameSave.find('.') != string::npos)
-            {
-                fileNameSave = "";
-                cout << "invalid file name.";
-            }
-            else
-            {
-                fileSave(fileNameSave);
-                cout << "File has been saved!\n";
-                break;
-            }
-        }
-        break;
-    }
-
     }
     glutPostRedisplay();
 }
@@ -382,8 +387,8 @@ void display(void)
     glLightfv(GL_LIGHT1, GL_AMBIENT, amb1);
     glLightfv(GL_LIGHT0, GL_SPECULAR, spec0);
     glLightfv(GL_LIGHT1, GL_SPECULAR, spec1);
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPos1);
-    glLightfv(GL_LIGHT1, GL_POSITION, lightPos2);
+    glLightfv(GL_LIGHT0, GL_POSITION, light0Pos);
+    glLightfv(GL_LIGHT1, GL_POSITION, light1Pos);
 
     //set initial camera position and direction
     gluLookAt(eye[0], eye[1], eye[2], lookAt[0], lookAt[1], lookAt[2], 0,1,0);
@@ -428,7 +433,8 @@ void printInstructions()
     cout << "*SHIFT + UP ARROW/DOWN ARROW = manipulate scale of currently selected object" << endl;
     cout << "*ALT + ARROW KEYS/PAGE UP/PAGE DOWN = control rotation of currently selected object" << endl;
     cout << "q or ESC = exits the program" << endl;
-    cout << "WASD = control movement of light source" << endl;
+    cout << "ALT + WASD = control movement of light source" << endl;
+    cout << "s = saves the current object scene as a .txt file" << endl;
     cout << "KEYS 6 to 0 = creates a cube, sphere, teapot, cone, torus respectively" << endl;
 
 }
