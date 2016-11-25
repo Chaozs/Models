@@ -35,7 +35,9 @@ class Object
         float getPosX();
         float getPosY();
         float getPosZ();
-        vector<float> getOrientation();
+        float getOrientationX();
+        float getOrientationY();
+        float getOrientationZ();
         float getScale();
         void drawObject();
         string getType();

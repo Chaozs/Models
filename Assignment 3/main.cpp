@@ -23,7 +23,7 @@ Thien Trandinh / trandit / 001420634
 
 #include "Object.h"
 
-float eye[] = {2, 2, 2};                 //initial camera location
+float eye[] = {2, -0.1, 2};                 //initial camera location
 float lookAt[] {0,0,0};                     //point camera is looking at
 float lightPos1[] = {-70, 38, -70, 1};      //initial light0 position
 float lightPos2[] = {70, 38, 70, 1};        //initial light1 positon
@@ -109,49 +109,100 @@ void setMaterial(int i)
 
 void special(int key, int x, int y)
 {
-    if (key == GLUT_KEY_LEFT && glutGetModifiers() == GLUT_ACTIVE_CTRL)
+    //translation of objects
+    if (key == GLUT_KEY_LEFT && glutGetModifiers() == GLUT_ACTIVE_CTRL && selectedObject != 0 && selectedObject->getPosX() > -50)
+    {
+        selectedObject->setPosition(selectedObject->getPosX()-0.3,
+                                    selectedObject->getPosY(), selectedObject->getPosZ()); //translate object in -x direction
+    }
+    else if (key == GLUT_KEY_RIGHT && glutGetModifiers() == GLUT_ACTIVE_CTRL && selectedObject != 0 && selectedObject->getPosX() < 50)
+    {
+        selectedObject->setPosition(selectedObject->getPosX()+0.3,
+                                    selectedObject->getPosY(), selectedObject->getPosZ()); //translate object in +x direction
+    }
+    else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_CTRL && selectedObject != 0 && selectedObject->getPosZ() < 50)
+    {
+        selectedObject->setPosition(selectedObject->getPosX(),
+                                    selectedObject->getPosY(), selectedObject->getPosZ()+0.3); //translate object in +z direction
+    }
+    else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_CTRL && selectedObject != 0 && selectedObject->getPosZ() > -50)
+    {
+        selectedObject->setPosition(selectedObject->getPosX(),
+                                    selectedObject->getPosY(), selectedObject->getPosZ()-0.3); //translate object in -z direction
+    }
+    else if (key == GLUT_KEY_PAGE_UP && glutGetModifiers() == GLUT_ACTIVE_CTRL && selectedObject != 0)
+    {
+        selectedObject->setPosition(selectedObject->getPosX(),
+                                    selectedObject->getPosY()+0.3, selectedObject->getPosZ()); //translate object in +y direction
+    }
+    else if (key == GLUT_KEY_PAGE_DOWN && glutGetModifiers() == GLUT_ACTIVE_CTRL && selectedObject != 0 && selectedObject->getPosY() > 0)
+    {
+        selectedObject->setPosition(selectedObject->getPosX(),
+                                    selectedObject->getPosY()-0.3, selectedObject->getPosZ()); //translate object in -y direction
+    }
+
+
+    //scaling of objects
+    else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_SHIFT && selectedObject != 0 && selectedObject->getScale() < 50)
+    {
+        selectedObject->setScale(selectedObject->getScale()+0.1);   //upscale object
+    }
+    else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_SHIFT && selectedObject != 0 && selectedObject->getScale() > 0.01)
+    {
+        selectedObject->setScale(selectedObject->getScale()-0.1);   //downscale object
+    }
+
+    //rotation of objects
+    else if (key == GLUT_KEY_LEFT && glutGetModifiers() == GLUT_ACTIVE_ALT && selectedObject != 0)
+    {
+        selectedObject->setOrientation(selectedObject->getOrientationX()-1,
+                                       selectedObject->getOrientationY(), selectedObject->getOrientationZ());  //rotate in -x axis
+    }
+    else if (key == GLUT_KEY_RIGHT && glutGetModifiers() == GLUT_ACTIVE_ALT)
+    {
+        if (selectedObject != 0)
+        {
+            selectedObject->setOrientation(selectedObject->getOrientationX()+1,
+                                           selectedObject->getOrientationY(), selectedObject->getOrientationZ());  //rotate in +x axis
+        }
+    }
+    else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_ALT && selectedObject != 0)
+    {
+        selectedObject->setOrientation(selectedObject->getOrientationX(),
+                                       selectedObject->getOrientationY(), selectedObject->getOrientationZ()+1);  //rotate in +z axis
+    }
+    else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_ALT && selectedObject != 0)
+    {
+        selectedObject->setOrientation(selectedObject->getOrientationX(),
+                                       selectedObject->getOrientationY(), selectedObject->getOrientationZ()-1);  //rotate in -z axis
+    }
+    else if (key == GLUT_KEY_PAGE_UP && selectedObject != 0 && glutGetModifiers() == GLUT_ACTIVE_ALT)
+    {
+        selectedObject->setOrientation(selectedObject->getOrientationX(),
+                                       selectedObject->getOrientationY()+1, selectedObject->getOrientationZ());  //rotate in +y axis
+    }
+    else if (key == GLUT_KEY_PAGE_DOWN && selectedObject != 0 && glutGetModifiers() == GLUT_ACTIVE_ALT)
+    {
+        selectedObject->setOrientation(selectedObject->getOrientationX(),
+                                       selectedObject->getOrientationY()-1, selectedObject->getOrientationZ());  //rotate in -y axis
+    }
+
+    //camera control
+    else if (key == GLUT_KEY_LEFT)
     {
         yAxisRotation--;        //rotate y-axis in negative direction
     }
-    else if (key == GLUT_KEY_RIGHT && glutGetModifiers() == GLUT_ACTIVE_CTRL)
+    else if (key == GLUT_KEY_RIGHT)
     {
         yAxisRotation++;        //rotate y-axis in positive direction
     }
-    else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_CTRL && xAxisRotation < 45)
+    else if (key == GLUT_KEY_UP && xAxisRotation < 45)
     {
         xAxisRotation++;        //rotate x-axis in positive direction
     }
-    else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_CTRL && xAxisRotation > -45)
+    else if (key == GLUT_KEY_DOWN && xAxisRotation > -45)
     {
         xAxisRotation--;        //rotate x-axis in negative direction
-    }
-    else if (key == GLUT_KEY_LEFT)
-    {
-        if (selectedObject != 0 && selectedObject->getPosX() > -50)    //if an object is selected
-        {
-            selectedObject->setPosition(selectedObject->getPosX()-0.3, selectedObject->getPosY(), selectedObject->getPosZ()); //translate object in -x direction
-        }
-    }
-    else if (key == GLUT_KEY_RIGHT)
-    {
-        if (selectedObject != 0 && selectedObject->getPosX() < 50)    //if an object is selected
-        {
-            selectedObject->setPosition(selectedObject->getPosX()+0.3, selectedObject->getPosY(), selectedObject->getPosZ()); //translate object in +x direction
-        }
-    }
-    else if (key == GLUT_KEY_UP)
-    {
-        if (selectedObject != 0 && selectedObject->getPosZ() < 50)    //if an object is selected
-        {
-            selectedObject->setPosition(selectedObject->getPosX(), selectedObject->getPosY(), selectedObject->getPosZ()+0.3); //translate object in +z direction
-        }
-    }
-    else if (key == GLUT_KEY_DOWN)
-    {
-        if (selectedObject != 0 && selectedObject->getPosZ() > -50)    //if an object is selected
-        {
-            selectedObject->setPosition(selectedObject->getPosX(), selectedObject->getPosY(), selectedObject->getPosZ()-0.3); //translate object in -z direction
-        }
     }
     glutPostRedisplay();
 }
@@ -319,8 +370,10 @@ void printInstructions()
     cout << "MODELLER" << endl;
     cout << "Susan Yuen / yuens2 / 001416198" << endl;
     cout << "Thien Trandinh / trandit / 001420634" << endl << endl;
-    cout << "*CTRL + ARROW KEYS = control camera movement" << endl;
-    cout << "*ARROW KEYS = control translation of currently selected object" << endl;
+    cout << "*ARROW KEYS = control camera movement" << endl;
+    cout << "*CTRL + ARROW KEYS/PAGE UP/PAGE DOWN = control translation of currently selected object" << endl;
+    cout << "*SHIFT + UP ARROW/DOWN ARROW = manipulate scale of currently selected object" << endl;
+    cout << "*ALT + ARROW KEYS/PAGE UP/PAGE DOWN = control rotation of currently selected object" << endl;
     cout << "q or ESC = exits the program" << endl;
     cout << "WASD = control movement of light source" << endl;
     cout << "KEYS 6 to 0 = creates a cube, sphere, teapot, cone, torus respectively" << endl;

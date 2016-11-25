@@ -62,13 +62,19 @@ float Object::getPosZ()
     return position[2];
 }
 
-vector<float> Object::getOrientation()
+float Object::getOrientationX()
 {
-    vector<float> o;
-    o[0] = orientation[0];
-    o[1] = orientation[1];
-    o[2] = orientation[2];
-    return o;
+    return orientation[0];
+}
+
+float Object::getOrientationY()
+{
+    return orientation[1];
+}
+
+float Object::getOrientationZ()
+{
+    return orientation[2];
 }
 
 float Object::getScale()
@@ -84,40 +90,42 @@ void Object::setScale(float scale)
 void Object::drawObject()
 {
     glPushMatrix();
-    glTranslatef(position[0], position[1], position[2]);
-    glRotatef(orientation[0], 1, 0, 0);
+    glTranslatef(position[0], position[1], position[2]);            //move object to its position
+    glTranslatef(-position[0]/2, -position[1]/2, -position[2]/2);   //allows rotation about the object center
+    glRotatef(orientation[0], 1, 0, 0);                             //rotates object to its orientation
     glRotatef(orientation[1], 0, 1, 0);
     glRotatef(orientation[2], 0, 0, 1);
+    glTranslatef(position[0]/2, position[1]/2, position[2]/2);
     switch(type)
     {
     case Cube:
         glPushMatrix();
         glTranslatef(0, objectScale/2, 0);
-        glutSolidCube(objectScale);
+        glutSolidCube(objectScale);             //draws cube
         glPopMatrix();
         break;
     case Sphere:
         glPushMatrix();
         glTranslatef(0, objectScale/2, 0);
-        glutSolidSphere(objectScale, 16, 16);
+        glutSolidSphere(objectScale, 16, 16);   //draws sphere
         glPopMatrix();
         break;
     case Teapot:
         glPushMatrix();
         glTranslatef(0, objectScale/2, 0);
-        glutSolidTeapot(objectScale);
+        glutSolidTeapot(objectScale);           //draws teapot
         glPopMatrix();
         break;
     case Cone:
         glPushMatrix();
         glTranslatef(0, objectScale/2, 0);
-        glutSolidCone(objectScale, objectScale, 16, 16);
+        glutSolidCone(objectScale, objectScale, 16, 16);    //draws cone
         glPopMatrix();
         break;
     case Torus:
         glPushMatrix();
         glTranslatef(0, objectScale/2, 0);
-        glutSolidTorus(objectScale-objectScale/2, objectScale, 16, 16);
+        glutSolidTorus(objectScale-objectScale/2, objectScale, 16, 16);     //draws torus
         glPopMatrix();
         break;
     }
