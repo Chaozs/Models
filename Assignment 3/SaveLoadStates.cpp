@@ -31,33 +31,30 @@ void SaveLoadStates::saveState(string fileName, list<Object*> objectList)
 
 list<Object*> SaveLoadStates::loadState(string fileName)
 {
-    /* changes string to char and opens file for loading*/
-    const char *fileChar =  fileName.c_str();
+    const char *fileChar =  fileName.c_str();// changes string to char
+    //declare int and floats for use in setting parameters of object
+    int type, mat;
+    float posX, posY, posZ, oriX, oriY, oriZ, scale;
+    //declare temp string for reading values from csv file
+    string strType, strMat, strPosX, strPosY, strPosZ, strOriX, strOriY, strOriZ, strScale;
     ifstream loadState;
     loadState.open (fileChar);
     string line;
     list<Object*> objectList;
+    Object* tempObj;
 
-    /*variable declaration*/
-    int type, mat;
-    float posX, posY, posZ, oriX, oriY, oriZ, scale;
-    string strType, strMat, strPosX, strPosY, strPosZ, strOriX, strOriY, strOriZ, strScale;
-
+    
+    //read each line 
     while(getline(loadState,line))
     {
-        stringstream linestr(line);
-        if (getline(linestr, strType, ',') &&
-                getline(linestr, strMat, ',') &&
-                getline(linestr, strPosX, ',') &&
-                getline(linestr, strPosY, ',') &&
-                getline(linestr, strPosZ, ',') &&
-                getline(linestr, strOriX, ',') &&
-                getline(linestr, strOriY, ',') &&
-                getline(linestr, strOriZ, ',') &&
-                getline(linestr, strScale, ','))
+    	//store each value in line to specified string variable
+        stringstream currentLine(line);
+        if (getline(currentLine, strType, ',') && getline(currentLine, strMat, ',') && getline(currentLine, strPosX, ',') &&
+                getline(currentLine, strPosY, ',') && getline(currentLine, strPosZ, ',') && getline(currentLine, strOriX, ',') &&
+                getline(currentLine, strOriY, ',') && getline(currentLine, strOriZ, ',') && getline(currentLine, strScale, ','))
         {
 
-            /*changes string type to the desired types (int, and floats for point3D) */
+            //convert string to int or float respectively
             type = atoi(strType.c_str());
             mat = atoi(strMat.c_str());
             posX = atof(strPosX.c_str());
@@ -68,7 +65,7 @@ list<Object*> SaveLoadStates::loadState(string fileName)
             oriZ = atof(strOriZ.c_str());
             scale = atof(strScale.c_str());
 
-            Object* tempObj;
+            //depending on type, create the correct shape
             tempObj = new Object();
             switch(type){
                 case 0:
@@ -87,7 +84,7 @@ list<Object*> SaveLoadStates::loadState(string fileName)
                     tempObj->setType(Object::Torus);
                     break;
             }
-            
+            //sets all other values per shape
             tempObj->storeMaterial(mat);
             tempObj->setPosition(posX, posY, posZ);
             tempObj->setOrientation(oriX, oriY, oriZ);
@@ -97,4 +94,5 @@ list<Object*> SaveLoadStates::loadState(string fileName)
         }
     }
     loadState.close();
+    return objectList;
 }

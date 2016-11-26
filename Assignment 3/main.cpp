@@ -66,76 +66,6 @@ void setMaterial(int i)
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, current.shininess);
 }
 
-void loadState(string fileName)
-{
-    /* changes string to char and opens file for loading*/
-    
-    const char *fileChar =  fileName.c_str();
-    ifstream loadState;
-    loadState.open (fileChar);
-    string line;
-
-    /*variable declaration*/
-    int type, mat;
-    float posX, posY, posZ, oriX, oriY, oriZ, scale;
-    string strType, strMat, strPosX, strPosY, strPosZ, strOriX, strOriY, strOriZ, strScale;
-
-    while(getline(loadState,line))
-    {
-        stringstream linestr(line);
-        if (getline(linestr, strType, ',') &&
-                getline(linestr, strMat, ',') &&
-                getline(linestr, strPosX, ',') &&
-                getline(linestr, strPosY, ',') &&
-                getline(linestr, strPosZ, ',') &&
-                getline(linestr, strOriX, ',') &&
-                getline(linestr, strOriY, ',') &&
-                getline(linestr, strOriZ, ',') &&
-                getline(linestr, strScale, ','))
-        {
-
-            /*changes string type to the desired types (int, and floats for point3D) */
-            type = atoi(strType.c_str());
-            mat = atoi(strMat.c_str());
-            posX = atof(strPosX.c_str());
-            posY = atof(strPosY.c_str());
-            posZ = atof(strPosZ.c_str());
-            oriX = atof(strOriX.c_str());
-            oriY = atof(strOriX.c_str());
-            oriZ = atof(strOriZ.c_str());
-            scale = atof(strScale.c_str());
-
-            Object* tempObj;
-            tempObj = new Object();
-            switch(type){
-                case 0:
-                    tempObj->setType(Object::Cube);
-                    break;
-                case 1:
-                    tempObj->setType(Object::Sphere);
-                    break;
-                case 2:
-                    tempObj->setType(Object::Teapot);
-                    break;
-                case 3:
-                    tempObj->setType(Object::Cone);
-                    break;
-                case 4:
-                    tempObj->setType(Object::Torus);
-                    break;
-            }
-            
-            tempObj->storeMaterial(mat);
-            tempObj->setPosition(posX, posY, posZ);
-            tempObj->setOrientation(oriX, oriY, oriZ);
-            tempObj->setScale(scale);
-            objectList.push_back(tempObj);
-
-        }
-    }
-    loadState.close();
-}
-
 void special(int key, int x, int y)
 {
     //translation of objects
@@ -300,6 +230,39 @@ void keyboard(unsigned char key, int x, int y)
             }
         }
         break;
+    case 'l':
+    {
+        string fileNameLoad = "";
+        while (fileNameLoad == "")
+        {
+            cout << "Which file would you like to load?: ";
+            cin >> fileNameLoad;
+            if (fileNameLoad.find('.') != string::npos)
+            {
+                fileNameLoad = "";
+                cout << "Invalid file name. Try again and make sure you haven't added any '.'s\n";
+            }
+            else
+            {
+                fileNameLoad = fileNameLoad + ".csv";
+                if (FILE *file = fopen(fileNameLoad.c_str(), "r"))
+                {
+
+                    fclose(file);
+                    objectList.clear();
+                    objectList = SaveLoadStates::loadState(fileNameLoad);
+                    cout << "File has been loaded!\n";
+                    break;
+                }
+                else
+                {
+                    cout << "File doesn't exist\n";
+                    break;
+                }
+            }
+        }
+        break;
+    }
     //set current object to current material
     case 'm':
         selectedObject->storeMaterial(materialCounter);
@@ -369,39 +332,7 @@ void keyboard(unsigned char key, int x, int y)
         objectList.push_back(selectedObject);
         break;
     }
-    case 'l':
-    {
-        string fileNameLoad = "";
-        while (fileNameLoad == "")
-        {
-            cout << "Which file would you like to load?: ";
-            cin >> fileNameLoad;
-            if (fileNameLoad.find('.') != string::npos)
-            {
-                fileNameLoad = "";
-                cout << "Invalid file name. Try again and make sure you haven't added any '.'s\n";
-            }
-            else
-            {
-                fileNameLoad = fileNameLoad + ".csv";
-                if (FILE *file = fopen(fileNameLoad.c_str(), "r"))
-                {
-
-                    fclose(file);
-                    objectList.clear();
-                    loadState(fileNameLoad);
-                    cout << "File has been loaded!\n";
-                    break;
-                }
-                else
-                {
-                    cout << "File doesn't exist\n";
-                    break;
-                }
-            }
-        }
-        break;
-    }
+    
     break;
     }
     glutPostRedisplay();
