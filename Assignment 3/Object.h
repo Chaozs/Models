@@ -28,7 +28,7 @@ class Object
 {
     public:
         enum ObjectType {Cube, Sphere, Teapot, Cone, Torus};
-        Object(ObjectType);   //constructor
+        Object();   //constructor
         void setPosition(float,float,float);
         void setOrientation(float,float,float);
         void setScale(float);
@@ -43,6 +43,7 @@ class Object
 	int getMaterial();
         void drawObject();
         void drawWireframe();
+	void setType(ObjectType);
 	int getType();
 
     private:

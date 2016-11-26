@@ -24,8 +24,10 @@ Thien Trandinh / trandit / 001420634
 #endif
 
 #include "Object.h"
+#include "MaterialStruct.h"
+#include "SaveLoadStates.h"
 
-float eye[] = {2, 2, 2};                 //initial camera location
+float eye[] = {2, 2, 2};                    //initial camera location
 float lookAt[] {0,0,0};                     //point camera is looking at
 float light0Pos[] = {-70, 38, -70, 1};      //initial light0 position
 float light1Pos[] = {40, 38, 70, 1};        //initial light1 positon
@@ -33,60 +35,13 @@ float xAxisRotation = 0;                    //rotation around x axis
 float yAxisRotation = 0;                    //rotation around y axis
 int sceneSize = 100;                        //total size of the scene
 float scaleFactor = 0.5/(sceneSize/50);     //scales scene to fit the screen
-int materialCounter = 0;
+int materialCounter = 1;                    //default material is brass
 list<Object*> objectList;                   //list of object addresses
 Object* selectedObject;                     //pointer to currently selected object
-void saveState(string fileName);
-void fileLoad(string fileName);
-
-//Material structure
-struct Material
-{
-    float ambient[4];
-    float diffuse[4];
-    float specular[4];
-    float shininess;
-};
-//list 5 different materials
-Material redPlastic =
-{
-    {0.3, 0.0, 0.0, 1.0},
-    {0.6, 0.0, 0.0, 1.0},
-    {0.8, 0.6, 0.6, 1.0},
-    0.25
-};
-Material brass =
-{
-    {0.33f, 0.22f, 0.27f, 1.f},
-    {0.78f, 0.57f, 0.11f, 1.f},
-    {0.99f, 0.94f, 0.8f, 1.f},
-    0.22f
-};
-Material chrome =
-{
-    {0.25f, 0.25f, 0.25f, 1.f},
-    {0.4f, 0.4f, 0.4f, 1.f},
-    {0.75f, 0.75f, 0.75f, 1.f},
-    0.6f
-};
-Material silver =
-{
-    {0.2f, 0.2f, 0.2f, 1.f},
-    {0.51f, 0.51f, 0.51f, 1.f},
-    {0.51f, 0.51f, 0.51f, 1.f},
-    0.4f
-};
-Material greenRubber =
-{
-    {0.0f, 0.05f, 0.f, 1.f},
-    {0.4f, 0.5f, 0.4f, 1.f},
-    {0.04f, 0.7f, 0.04f, 1.f},
-    0.078f
-};
 
 void setMaterial(int i)
 {
-    Material current;
+    MaterialStruct current;
     switch(i)
     {
     case 0:
@@ -109,6 +64,76 @@ void setMaterial(int i)
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, current.diffuse);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, current.specular);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, current.shininess);
+}
+
+void loadState(string fileName)
+{
+    /* changes string to char and opens file for loading*/
+    
+    const char *fileChar =  fileName.c_str();
+    ifstream loadState;
+    loadState.open (fileChar);
+    string line;
+
+    /*variable declaration*/
+    int type, mat;
+    float posX, posY, posZ, oriX, oriY, oriZ, scale;
+    string strType, strMat, strPosX, strPosY, strPosZ, strOriX, strOriY, strOriZ, strScale;
+
+    while(getline(loadState,line))
+    {
+        stringstream linestr(line);
+        if (getline(linestr, strType, ',') &&
+                getline(linestr, strMat, ',') &&
+                getline(linestr, strPosX, ',') &&
+                getline(linestr, strPosY, ',') &&
+                getline(linestr, strPosZ, ',') &&
+                getline(linestr, strOriX, ',') &&
+                getline(linestr, strOriY, ',') &&
+                getline(linestr, strOriZ, ',') &&
+                getline(linestr, strScale, ','))
+        {
+
+            /*changes string type to the desired types (int, and floats for point3D) */
+            type = atoi(strType.c_str());
+            mat = atoi(strMat.c_str());
+            posX = atof(strPosX.c_str());
+            posY = atof(strPosY.c_str());
+            posZ = atof(strPosZ.c_str());
+            oriX = atof(strOriX.c_str());
+            oriY = atof(strOriX.c_str());
+            oriZ = atof(strOriZ.c_str());
+            scale = atof(strScale.c_str());
+
+            Object* tempObj;
+            tempObj = new Object();
+            switch(type){
+                case 0:
+                    tempObj->setType(Object::Cube);
+                    break;
+                case 1:
+                    tempObj->setType(Object::Sphere);
+                    break;
+                case 2:
+                    tempObj->setType(Object::Teapot);
+                    break;
+                case 3:
+                    tempObj->setType(Object::Cone);
+                    break;
+                case 4:
+                    tempObj->setType(Object::Torus);
+                    break;
+            }
+            
+            tempObj->storeMaterial(mat);
+            tempObj->setPosition(posX, posY, posZ);
+            tempObj->setOrientation(oriX, oriY, oriZ);
+            tempObj->setScale(scale);
+            objectList.push_back(tempObj);
+
+        }
+    }
+    loadState.close();
 }
 
 void special(int key, int x, int y)
@@ -144,8 +169,6 @@ void special(int key, int x, int y)
         selectedObject->setPosition(selectedObject->getPosX(),
                                     selectedObject->getPosY()-0.3, selectedObject->getPosZ()); //translate object in -y direction
     }
-
-
     //scaling of objects
     else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_SHIFT && selectedObject != 0 && selectedObject->getScale() < 50)
     {
@@ -190,7 +213,6 @@ void special(int key, int x, int y)
         selectedObject->setOrientation(selectedObject->getOrientationX(),
                                        selectedObject->getOrientationY()-1, selectedObject->getOrientationZ());  //rotate in -y axis
     }
-
     //camera control
     else if (key == GLUT_KEY_LEFT)
     {
@@ -271,12 +293,11 @@ void keyboard(unsigned char key, int x, int y)
                 }
                 else
                 {
-                    saveState(fileNameSave);
+                    SaveLoadStates::saveState(fileNameSave, objectList);
                     cout << "File has been saved!\n";
                     break;
                 }
             }
-
         }
         break;
     //set current object to current material
@@ -303,37 +324,47 @@ void keyboard(unsigned char key, int x, int y)
     case '5':
         materialCounter = 4;
         break;
+    //create a cube
     case '6':
     {
-        selectedObject = new Object(Object::Cube);
+        selectedObject = new Object();
+        selectedObject->setType(Object::Cube);
         selectedObject->storeMaterial(materialCounter);
         objectList.push_back(selectedObject);
     }
     break;
+    //create a sphere
     case '7':
     {
-        selectedObject = new Object(Object::Sphere);
+        selectedObject = new Object();
+        selectedObject->setType(Object::Sphere);
         selectedObject->storeMaterial(materialCounter);
         objectList.push_back(selectedObject);
     }
     break;
+    //create a teapot
     case '8':
     {
-        selectedObject = new Object(Object::Teapot);
+        selectedObject = new Object();
+        selectedObject->setType(Object::Teapot);
         selectedObject->storeMaterial(materialCounter);
         objectList.push_back(selectedObject);
     }
     break;
+    //create a cone
     case '9':
     {
-        selectedObject = new Object(Object::Cone);
+        selectedObject = new Object();
+        selectedObject->setType(Object::Cone);
         selectedObject->storeMaterial(materialCounter);
         objectList.push_back(selectedObject);
     }
     break;
+    //create a torus
     case '0':
     {
-        selectedObject = new Object(Object::Torus);
+        selectedObject = new Object();
+        selectedObject->setType(Object::Torus);
         selectedObject->storeMaterial(materialCounter);
         objectList.push_back(selectedObject);
         break;
@@ -358,7 +389,7 @@ void keyboard(unsigned char key, int x, int y)
 
                     fclose(file);
                     objectList.clear();
-                    fileLoad(fileNameLoad);
+                    loadState(fileNameLoad);
                     cout << "File has been loaded!\n";
                     break;
                 }
@@ -369,135 +400,11 @@ void keyboard(unsigned char key, int x, int y)
                 }
             }
         }
+        break;
     }
-    break;
-
-
     break;
     }
     glutPostRedisplay();
-}
-
-void saveState(string fileName)
-{
-    fileName = fileName + ".csv"; //creates csv file with user inputted name
-    const char *fileNam =  fileName.c_str(); // changes string to char
-
-    ofstream saveState;
-    saveState.open (fileNam);
-
-    for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
-    {
-        Object* objP = *it;
-        Object obj = *objP;
-        saveState << obj.getType() << "," << obj.getMaterial();
-        saveState << "," << obj.getPosX() << "," <<  obj.getPosY() << "," <<  obj.getPosZ();
-        saveState << "," << obj.getOrientationX() << "," <<  obj.getOrientationY() << "," <<  obj.getOrientationZ();
-        saveState << "," << obj.getScale() << "\n";
-    }
-
-    saveState.close();
-}
-
-void fileLoad(string fileName)
-{
-    /* changes string to char and opens file for loading*/
-    const char *fileNam =  fileName.c_str();
-    ifstream fileLoad;
-    fileLoad.open (fileNam);
-    string line;
-
-    /*variable declaration*/
-    int type, mat;
-    float posX, posY, posZ, oriX, oriY, oriZ, scale;
-    string strType, strMat, strPosX, strPosY, strPosZ, strOriX, strOriY, strOriZ, strScale;
-
-    while(getline(fileLoad,line))
-    {
-        stringstream linestr(line);
-        if (getline(linestr, strType, ',') &&
-                getline(linestr, strMat, ',') &&
-                getline(linestr, strPosX, ',') &&
-                getline(linestr, strPosY, ',') &&
-                getline(linestr, strPosZ, ',') &&
-                getline(linestr, strOriX, ',') &&
-                getline(linestr, strOriY, ',') &&
-                getline(linestr, strOriZ, ',') &&
-                getline(linestr, strScale, ','))
-        {
-
-            /*changes string type to the desired types (int, and floats for point3D) */
-            type = atoi(strType.c_str());
-            mat = atoi(strMat.c_str());
-            posX = atof(strPosX.c_str());
-            posY = atof(strPosY.c_str());
-            posZ = atof(strPosZ.c_str());
-            oriX = atof(strOriX.c_str());
-            oriY = atof(strOriX.c_str());
-            oriZ = atof(strOriZ.c_str());
-            scale = atof(strScale.c_str());
-
-            switch(type)
-            {
-            case 0:
-            {
-                selectedObject = new Object(Object::Cube);
-                selectedObject->storeMaterial(mat);
-                selectedObject->setPosition(posX, posY, posZ);
-                selectedObject->setOrientation(oriX, oriY, oriZ);
-                selectedObject->setScale(scale);
-                objectList.push_back(selectedObject);
-            }
-            break;
-            case 1:
-            {
-                selectedObject = new Object(Object::Sphere);
-                selectedObject->storeMaterial(mat);
-                selectedObject->setPosition(posX, posY, posZ);
-                selectedObject->setOrientation(oriX, oriY, oriZ);
-                selectedObject->setScale(scale);
-                objectList.push_back(selectedObject);
-            }
-            break;
-            case 2:
-            {
-                selectedObject = new Object(Object::Teapot);
-                selectedObject->storeMaterial(mat);
-                selectedObject->setPosition(posX, posY, posZ);
-                selectedObject->setOrientation(oriX, oriY, oriZ);
-                selectedObject->setScale(scale);
-                objectList.push_back(selectedObject);
-            }
-            break;
-            case 3:
-            {
-                selectedObject = new Object(Object::Cone);
-                selectedObject->storeMaterial(mat);
-                selectedObject->setPosition(posX, posY, posZ);
-                selectedObject->setOrientation(oriX, oriY, oriZ);
-                selectedObject->setScale(scale);
-                objectList.push_back(selectedObject);
-            }
-            break;
-            case 4:
-            {
-                selectedObject = new Object(Object::Torus);
-                selectedObject->storeMaterial(mat);
-                selectedObject->setPosition(posX, posY, posZ);
-                selectedObject->setOrientation(oriX, oriY, oriZ);
-                selectedObject->setScale(scale);
-                objectList.push_back(selectedObject);
-            }
-            break;
-            }
-
-
-        }
-    }
-
-
-    fileLoad.close();
-
 }
 
 //initialize
@@ -593,6 +500,7 @@ void printInstructions()
     cout << "ALT + wasd = control movement of light source 1" << endl;
     cout << "SHIFT + wasd = control movement of light source 2" << endl;
     cout << "s = saves the current object scene as a .txt file" << endl;
+    cout << "l = loads the object scene at specified .txt file" << endl;
     cout << "KEYS 6 to 0 = creates a cube, sphere, teapot, cone, torus respectively" << endl;
 
 }

@@ -8,24 +8,15 @@ Thien Trandinh / trandit / 001420634
 #include "Object.h"
 
 //constructor
-Object::Object(ObjectType t)
+Object::Object()
 {
-    type = t;
-
     //sets initial position to origin
     position[0] = 0;
     position[1] = 0;
     position[2] = 0;
 
     //sets initial orientation
-    if(t==Cone)
-    {
-        orientation[0] = -90;
-    }
-    else
-    {
-        orientation[0] = 0;
-    }
+    orientation[0] = 0;
     orientation[1] = 0;
     orientation[2] = 0;
 
@@ -33,6 +24,13 @@ Object::Object(ObjectType t)
     objectScale = 1;
 }
 
+void Object::setType(ObjectType t){
+    type = t;
+    if(type==Cone)
+    {
+        orientation[0] = -90;
+    }
+}
 
 //store material: where 0=redPlastic, 1=brass, 2=chrome, 3=silver, 4=greenrubber
 void Object::storeMaterial(int mat){
