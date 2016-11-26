@@ -437,10 +437,9 @@ void fileLoad(string fileName)
             oriZ = atof(strOriZ.c_str());
             scale = atof(strScale.c_str());
 
-
             switch(type)
             {
-            case '0':
+            case 0:
             {
                 selectedObject = new Object(Object::Cube);
                 selectedObject->storeMaterial(mat);
@@ -450,7 +449,7 @@ void fileLoad(string fileName)
                 objectList.push_back(selectedObject);
             }
             break;
-            case '1':
+            case 1:
             {
                 selectedObject = new Object(Object::Sphere);
                 selectedObject->storeMaterial(mat);
@@ -460,7 +459,7 @@ void fileLoad(string fileName)
                 objectList.push_back(selectedObject);
             }
             break;
-            case '2':
+            case 2:
             {
                 selectedObject = new Object(Object::Teapot);
                 selectedObject->storeMaterial(mat);
@@ -470,7 +469,7 @@ void fileLoad(string fileName)
                 objectList.push_back(selectedObject);
             }
             break;
-            case '3':
+            case 3:
             {
                 selectedObject = new Object(Object::Cone);
                 selectedObject->storeMaterial(mat);
@@ -480,7 +479,7 @@ void fileLoad(string fileName)
                 objectList.push_back(selectedObject);
             }
             break;
-            case '4':
+            case 4:
             {
                 selectedObject = new Object(Object::Torus);
                 selectedObject->storeMaterial(mat);
