@@ -394,7 +394,7 @@ void init(void)
     setMaterial(0);
 
     //enable backface culling
-    glFrontFace(GL_CCW);
+    glFrontFace(GL_CW);
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
 }
@@ -476,6 +476,7 @@ void display(void)
 
     glColor3f(0.5,0.5,0.5);
     //draws all objects
+    glFrontFace(GL_CCW);
     for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
     {
         Object* objP = *it;
@@ -483,6 +484,7 @@ void display(void)
         setMaterial(obj.getMaterial());
         obj.drawObject(objP == selectedObject);
     }
+    glFrontFace(GL_CW);
 
     glPopMatrix();
 
