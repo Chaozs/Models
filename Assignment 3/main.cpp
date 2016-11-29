@@ -29,8 +29,8 @@ Thien Trandinh / trandit / 001420634
 
 float eye[] = {2, 2, 2};                    //initial camera location
 float lookAt[] {0,0,0};                     //point camera is looking at
-float light0Pos[] = {-70, 38, -70, 1};      //initial light0 position
-float light1Pos[] = {40, 38, 70, 1};        //initial light1 positon
+float light0Pos[] = {-5, 3, 0, 1};          //initial light0 position
+float light1Pos[] = {5, 3, 0, 1};           //initial light1 positon
 float xAxisRotation = 0;                    //rotation around x axis
 float yAxisRotation = 0;                    //rotation around y axis
 int sceneSize = 100;                        //total size of the scene
@@ -419,17 +419,18 @@ void addLights()
     glLightfv(GL_LIGHT0, GL_POSITION, light0Pos);
     glLightfv(GL_LIGHT1, GL_POSITION, light1Pos);
 
-    //draw light spheres
-    glColor3f(1, 1, 1);
     //draw sphere for light0
+    glColor3f(0, 0.2, 1);
     glPushMatrix();
     glTranslatef(light0Pos[0], light0Pos[1], light0Pos[2]);
-    glutWireSphere(1, 16, 16);
+    glutWireSphere(0.1, 16, 16);
     glPopMatrix();
-        //draw sphere for light1
+
+    //draw sphere for light1
+    glColor3f(1, 0.6, 0);
     glPushMatrix();
     glTranslatef(light1Pos[0], light1Pos[1], light1Pos[2]);
-    glutWireSphere(1, 16, 16);
+    glutWireSphere(0.1, 16, 16);
     glPopMatrix();
 }
 
