@@ -26,32 +26,32 @@ using namespace std;
 
 class Object
 {
-    public:
-        enum ObjectType {Cube, Sphere, Teapot, Cone, Torus};
-        Object();   //constructor
-        void setPosition(float,float,float);
-        void setOrientation(float,float,float);
-        void setScale(float);
-	void storeMaterial(int);
-        float getPosX();
-        float getPosY();
-        float getPosZ();
-        float getOrientationX();
-        float getOrientationY();
-        float getOrientationZ();
-        float getScale();
-	int getMaterial();
-        void drawObject(bool);
-	void setType(ObjectType);
-	int getType();
+public:
+    enum ObjectType {Cube, Sphere, Teapot, Cone, Torus};
+    Object();   //constructor
+    void setPosition(float,float,float);
+    void setOrientation(float,float,float);
+    void setScale(float);
+    void storeMaterial(int);
+    float getPosX();
+    float getPosY();
+    float getPosZ();
+    float getOrientationX();
+    float getOrientationY();
+    float getOrientationZ();
+    float getScale();
+    int getMaterial();
+    void drawObject(bool);
+    void setType(ObjectType);
+    int getType();
 
-    private:
-        float position[3];
-        float orientation[3];
-        int material;
-        //TDO Bounding planes
-        float objectScale;
-        ObjectType type;
+private:
+    float position[3];
+    float orientation[3];
+    int material;
+    //TDO Bounding planes
+    float objectScale;
+    ObjectType type;
 };
 
 #endif

@@ -43,11 +43,11 @@ list<Object*> SaveLoadStates::loadState(string fileName)
     list<Object*> objectList;
     Object* tempObj;
 
-    
-    //read each line 
+
+    //read each line
     while(getline(loadState,line))
     {
-    	//store each value in line to specified string variable
+        //store each value in line to specified string variable
         stringstream currentLine(line);
         if (getline(currentLine, strType, ',') && getline(currentLine, strMat, ',') && getline(currentLine, strPosX, ',') &&
                 getline(currentLine, strPosY, ',') && getline(currentLine, strPosZ, ',') && getline(currentLine, strOriX, ',') &&
@@ -67,22 +67,23 @@ list<Object*> SaveLoadStates::loadState(string fileName)
 
             //depending on type, create the correct shape
             tempObj = new Object();
-            switch(type){
-                case 0:
-                    tempObj->setType(Object::Cube);
-                    break;
-                case 1:
-                    tempObj->setType(Object::Sphere);
-                    break;
-                case 2:
-                    tempObj->setType(Object::Teapot);
-                    break;
-                case 3:
-                    tempObj->setType(Object::Cone);
-                    break;
-                case 4:
-                    tempObj->setType(Object::Torus);
-                    break;
+            switch(type)
+            {
+            case 0:
+                tempObj->setType(Object::Cube);
+                break;
+            case 1:
+                tempObj->setType(Object::Sphere);
+                break;
+            case 2:
+                tempObj->setType(Object::Teapot);
+                break;
+            case 3:
+                tempObj->setType(Object::Cone);
+                break;
+            case 4:
+                tempObj->setType(Object::Torus);
+                break;
             }
             //sets all other values per shape
             tempObj->storeMaterial(mat);

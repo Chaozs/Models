@@ -30,9 +30,9 @@ using namespace std;
 
 class SaveLoadStates
 {
-	public:
-		static void saveState(string, list<Object*>);
-		static list<Object*> loadState(string);
+public:
+    static void saveState(string, list<Object*>);
+    static list<Object*> loadState(string);
 };
 
 #endif

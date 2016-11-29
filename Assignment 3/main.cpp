@@ -69,51 +69,78 @@ void setMaterial(int i)
 void special(int key, int x, int y)
 {
     //translation of objects
-    if (key == GLUT_KEY_LEFT && glutGetModifiers() == GLUT_ACTIVE_CTRL && selectedObject != 0 && selectedObject->getPosX() > -50)
+    if (key == GLUT_KEY_LEFT && glutGetModifiers() == GLUT_ACTIVE_CTRL)
     {
-        selectedObject->setPosition(selectedObject->getPosX()-0.3,
-                                    selectedObject->getPosY(), selectedObject->getPosZ()); //translate object in -x direction
+        if (selectedObject != 0 && selectedObject->getPosX() > -50)
+        {
+            selectedObject->setPosition(selectedObject->getPosX()-0.3,
+                                        selectedObject->getPosY(), selectedObject->getPosZ()); //translate object in -x direction
+        }
     }
-    else if (key == GLUT_KEY_RIGHT && glutGetModifiers() == GLUT_ACTIVE_CTRL && selectedObject != 0 && selectedObject->getPosX() < 50)
+    else if (key == GLUT_KEY_RIGHT && glutGetModifiers() == GLUT_ACTIVE_CTRL)
     {
-        selectedObject->setPosition(selectedObject->getPosX()+0.3,
-                                    selectedObject->getPosY(), selectedObject->getPosZ()); //translate object in +x direction
+        if (selectedObject != 0 && selectedObject->getPosX() < 50)
+        {
+            selectedObject->setPosition(selectedObject->getPosX()+0.3,
+                                        selectedObject->getPosY(), selectedObject->getPosZ()); //translate object in +x direction
+        }
     }
-    else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_CTRL && selectedObject != 0 && selectedObject->getPosZ() < 50)
+    else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_CTRL)
     {
-        selectedObject->setPosition(selectedObject->getPosX(),
-                                    selectedObject->getPosY(), selectedObject->getPosZ()+0.3); //translate object in +z direction
+        if (selectedObject != 0 && selectedObject->getPosZ() < 50)
+        {
+            selectedObject->setPosition(selectedObject->getPosX(),
+                                        selectedObject->getPosY(), selectedObject->getPosZ()+0.3); //translate object in +z direction
+        }
     }
-    else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_CTRL && selectedObject != 0 && selectedObject->getPosZ() > -50)
+    else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_CTRL)
     {
-        selectedObject->setPosition(selectedObject->getPosX(),
-                                    selectedObject->getPosY(), selectedObject->getPosZ()-0.3); //translate object in -z direction
+        if (selectedObject != 0 && selectedObject->getPosZ() > -50)
+        {
+            selectedObject->setPosition(selectedObject->getPosX(),
+                                        selectedObject->getPosY(), selectedObject->getPosZ()-0.3); //translate object in -z direction
+        }
     }
-    else if (key == GLUT_KEY_PAGE_UP && glutGetModifiers() == GLUT_ACTIVE_CTRL && selectedObject != 0)
+    else if (key == GLUT_KEY_PAGE_UP && glutGetModifiers() == GLUT_ACTIVE_CTRL)
     {
-        selectedObject->setPosition(selectedObject->getPosX(),
-                                    selectedObject->getPosY()+0.3, selectedObject->getPosZ()); //translate object in +y direction
+        if (selectedObject != 0)
+        {
+            selectedObject->setPosition(selectedObject->getPosX(),
+                                        selectedObject->getPosY()+0.3, selectedObject->getPosZ()); //translate object in +y direction
+        }
     }
-    else if (key == GLUT_KEY_PAGE_DOWN && glutGetModifiers() == GLUT_ACTIVE_CTRL && selectedObject != 0 && selectedObject->getPosY() > 0)
+    else if (key == GLUT_KEY_PAGE_DOWN && glutGetModifiers() == GLUT_ACTIVE_CTRL)
     {
-        selectedObject->setPosition(selectedObject->getPosX(),
-                                    selectedObject->getPosY()-0.3, selectedObject->getPosZ()); //translate object in -y direction
+        if (selectedObject != 0 && selectedObject->getPosY() > 0)
+        {
+            selectedObject->setPosition(selectedObject->getPosX(),
+                                        selectedObject->getPosY()-0.3, selectedObject->getPosZ()); //translate object in -y direction
+        }
     }
     //scaling of objects
-    else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_SHIFT && selectedObject != 0 && selectedObject->getScale() < 50)
+    else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_SHIFT)
     {
-        selectedObject->setScale(selectedObject->getScale()+0.1);   //upscale object
+        if (selectedObject != 0 && selectedObject->getScale() < 50)
+        {
+            selectedObject->setScale(selectedObject->getScale()+0.1);   //upscale object
+        }
     }
-    else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_SHIFT && selectedObject != 0 && selectedObject->getScale() > 0.01)
+    else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_SHIFT)
     {
-        selectedObject->setScale(selectedObject->getScale()-0.1);   //downscale object
+        if (selectedObject != 0 && selectedObject->getScale() > 0.01)
+        {
+            selectedObject->setScale(selectedObject->getScale()-0.1);   //downscale object
+        }
     }
 
     //rotation of objects
-    else if (key == GLUT_KEY_LEFT && glutGetModifiers() == GLUT_ACTIVE_ALT && selectedObject != 0)
+    else if (key == GLUT_KEY_LEFT && glutGetModifiers() == GLUT_ACTIVE_ALT)
     {
-        selectedObject->setOrientation(selectedObject->getOrientationX()-1,
-                                       selectedObject->getOrientationY(), selectedObject->getOrientationZ());  //rotate in -x axis
+        if (selectedObject != 0)
+        {
+            selectedObject->setOrientation(selectedObject->getOrientationX()-1,
+                                           selectedObject->getOrientationY(), selectedObject->getOrientationZ());  //rotate in -x axis
+        }
     }
     else if (key == GLUT_KEY_RIGHT && glutGetModifiers() == GLUT_ACTIVE_ALT)
     {
@@ -123,25 +150,37 @@ void special(int key, int x, int y)
                                            selectedObject->getOrientationY(), selectedObject->getOrientationZ());  //rotate in +x axis
         }
     }
-    else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_ALT && selectedObject != 0)
+    else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_ALT)
     {
-        selectedObject->setOrientation(selectedObject->getOrientationX(),
-                                       selectedObject->getOrientationY(), selectedObject->getOrientationZ()+1);  //rotate in +z axis
+        if (selectedObject != 0)
+        {
+            selectedObject->setOrientation(selectedObject->getOrientationX(),
+                                           selectedObject->getOrientationY(), selectedObject->getOrientationZ()+1);  //rotate in +z axis
+        }
     }
-    else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_ALT && selectedObject != 0)
+    else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_ALT)
     {
-        selectedObject->setOrientation(selectedObject->getOrientationX(),
-                                       selectedObject->getOrientationY(), selectedObject->getOrientationZ()-1);  //rotate in -z axis
+        if (selectedObject != 0)
+        {
+            selectedObject->setOrientation(selectedObject->getOrientationX(),
+                                           selectedObject->getOrientationY(), selectedObject->getOrientationZ()-1);  //rotate in -z axis
+        }
     }
-    else if (key == GLUT_KEY_PAGE_UP && selectedObject != 0 && glutGetModifiers() == GLUT_ACTIVE_ALT)
+    else if (key == GLUT_KEY_PAGE_UP && glutGetModifiers() == GLUT_ACTIVE_ALT)
     {
-        selectedObject->setOrientation(selectedObject->getOrientationX(),
-                                       selectedObject->getOrientationY()+1, selectedObject->getOrientationZ());  //rotate in +y axis
+        if (selectedObject != 0)
+        {
+            selectedObject->setOrientation(selectedObject->getOrientationX(),
+                                           selectedObject->getOrientationY()+1, selectedObject->getOrientationZ());  //rotate in +y axis
+        }
     }
-    else if (key == GLUT_KEY_PAGE_DOWN && selectedObject != 0 && glutGetModifiers() == GLUT_ACTIVE_ALT)
+    else if (key == GLUT_KEY_PAGE_DOWN && glutGetModifiers() == GLUT_ACTIVE_ALT)
     {
-        selectedObject->setOrientation(selectedObject->getOrientationX(),
-                                       selectedObject->getOrientationY()-1, selectedObject->getOrientationZ());  //rotate in -y axis
+        if (selectedObject != 0)
+        {
+            selectedObject->setOrientation(selectedObject->getOrientationX(),
+                                           selectedObject->getOrientationY()-1, selectedObject->getOrientationZ());  //rotate in -y axis
+        }
     }
     //camera control
     else if (key == GLUT_KEY_LEFT)
