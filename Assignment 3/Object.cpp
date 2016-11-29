@@ -66,6 +66,7 @@ int Object::getType()
         return 4;
         break;
     }
+    return -1;
 }
 
 void Object::setPosition(float x, float y, float z)

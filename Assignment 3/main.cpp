@@ -293,6 +293,8 @@ void keyboard(unsigned char key, int x, int y)
     case 'S':
         light1Pos[1]-=2;       //move light1 down
         break;
+    case 'r':
+        objectList.clear();     // clears the object list
     case 'a':
         if (glutGetModifiers() & GLUT_ACTIVE_ALT)
         {
@@ -571,17 +573,21 @@ void printInstructions()
 {
     cout << "MODELLER" << endl;
     cout << "Susan Yuen / yuens2 / 001416198" << endl;
-    cout << "Thien Trandinh / trandit / 001420634" << endl << endl;
-    cout << "*ARROW KEYS = control camera movement" << endl;
-    cout << "*CTRL + ARROW KEYS/PAGE UP/PAGE DOWN = control translation of currently selected object" << endl;
-    cout << "*SHIFT + UP ARROW/DOWN ARROW = manipulate scale of currently selected object" << endl;
-    cout << "*ALT + ARROW KEYS/PAGE UP/PAGE DOWN = control rotation of currently selected object" << endl;
-    cout << "q or ESC = exits the program" << endl;
-    cout << "ALT + wasd = control movement of light source 1" << endl;
-    cout << "SHIFT + wasd = control movement of light source 2" << endl;
-    cout << "s = saves the current object scene as a .txt file" << endl;
-    cout << "l = loads the object scene at specified .txt file" << endl;
-    cout << "KEYS 6 to 0 = creates a cube, sphere, octahedron, cone, torus respectively" << endl;
+    cout << "Thien Trandinh / trandit / 001420634" << endl;
+    cout << "* Note: CAPS LOCK must be turned off for the commands to behave correctly" << endl << endl;
+    cout << "* ARROW KEYS = control camera movement" << endl;
+    cout << "* CTRL + ARROW KEYS/PAGE UP/PAGE DOWN = control translation of currently selected object" << endl;
+    cout << "* SHIFT + UP ARROW/DOWN ARROW = manipulate scale of currently selected object" << endl;
+    cout << "* ALT + ARROW KEYS/PAGE UP/PAGE DOWN = control rotation of currently selected object" << endl;
+    cout << "* q or ESC = exits the program" << endl;
+    cout << "* ALT + wasd = control movement of light source 1" << endl;
+    cout << "* SHIFT + wasd = control movement of light source 2" << endl;
+    cout << "* s = saves the current object scene as a .txt file" << endl;
+    cout << "* l = loads the object scene at specified .txt file" << endl;
+    cout << "* r = clears the scene" << endl;
+    cout << "* KEYS 1 to 5 = changes current drawing material" << endl;
+    cout << "* m = applies current drawing material to selected object" << endl;
+    cout << "* KEYS 6 to 0 = creates a cube, sphere, octahedron, cone, torus respectively" << endl;
 
 }
 
