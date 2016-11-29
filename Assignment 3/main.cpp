@@ -250,6 +250,7 @@ void keyboard(unsigned char key, int x, int y)
 
                     fclose(file);
                     objectList.clear();
+                    selectedObject = 0;
                     objectList = SaveLoadStates::loadState(fileNameLoad);
                     cout << "File has been loaded!\n";
                     break;
