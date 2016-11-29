@@ -432,13 +432,29 @@ void display(void)
     glScalef(scaleFactor, scaleFactor, scaleFactor);
     glRotatef(xAxisRotation, 1, 0, 0);
     glRotatef(yAxisRotation, 0, 1, 0);
-    glColor3f(1,1,1);
+
     glPushMatrix();
+    glColor3f(0.7,0.7,0.7);
     glTranslatef(0,-1,0);
     glScalef(1,0.01,1);
     glutSolidCube(100); //draws plane
     glPopMatrix();
 
+    glPushMatrix();
+    glColor3f(0.5,0.5,0.5);
+    glTranslatef(-8,45,0);
+    glScalef(0.01,1,1);
+    glutSolidCube(100); //draws plane
+    glPopMatrix();
+
+    glPushMatrix();
+    glColor3f(0.3,0.3,0.3);
+    glTranslatef(0,45,-8);
+    glScalef(1,1,0.01);
+    glutSolidCube(100); //draws plane
+    glPopMatrix();
+
+    glColor3f(0.5,0.5,0.5);
     //draws all objects
     for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
     {
