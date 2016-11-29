@@ -399,13 +399,8 @@ void init(void)
     glEnable(GL_CULL_FACE);
 }
 
-//display method to be recalled upon any changes
-void display(void)
+void addLights()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
     //set light colours
     float diff0[4] = {0, 0.2, 1, 1};            //blue light (light0)
     float diff1[4] = {1, 0.6, 0, 1};            //amber light (light1)
@@ -424,6 +419,27 @@ void display(void)
     glLightfv(GL_LIGHT0, GL_POSITION, light0Pos);
     glLightfv(GL_LIGHT1, GL_POSITION, light1Pos);
 
+    //draw light spheres
+    glColor3f(1, 1, 1);
+    //draw sphere for light0
+    glPushMatrix();
+    glTranslatef(light0Pos[0], light0Pos[1], light0Pos[2]);
+    glutWireSphere(1, 16, 16);
+    glPopMatrix();
+        //draw sphere for light1
+    glPushMatrix();
+    glTranslatef(light1Pos[0], light1Pos[1], light1Pos[2]);
+    glutWireSphere(1, 16, 16);
+    glPopMatrix();
+}
+
+//display method to be recalled upon any changes
+void display(void)
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
     //set initial camera position and direction
     gluLookAt(eye[0], eye[1], eye[2], lookAt[0], lookAt[1], lookAt[2], 0,1,0);
 
@@ -432,6 +448,8 @@ void display(void)
     glScalef(scaleFactor, scaleFactor, scaleFactor);
     glRotatef(xAxisRotation, 1, 0, 0);
     glRotatef(yAxisRotation, 0, 1, 0);
+
+    addLights();
 
     glPushMatrix();
     glColor3f(0.7,0.7,0.7);
