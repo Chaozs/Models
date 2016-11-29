@@ -39,6 +39,13 @@ int materialCounter = 1;                    //default material is brass
 list<Object*> objectList;                   //list of object addresses
 Object* selectedObject;                     //pointer to currently selected object
 
+//*********************Texture***************
+int height = 0;
+int width =0;
+int max =0; 
+GLubyte* img_data;
+//*********************Texture***************
+
 void setMaterial(int i)
 {
     MaterialStruct current;
@@ -65,6 +72,67 @@ void setMaterial(int i)
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, current.specular);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, current.shininess);
 }
+
+//**************************************************************Texture***************
+GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
+{
+    GLubyte* img;
+    FILE *fd;
+    int n, m;
+    int  k, nm;
+    char c;
+    int i;
+    char b[100];
+    float s;
+    int red, green, blue;
+    
+    /* first open file and check if it's an ASCII PPM (indicated by P3 at the start) */
+    fd = fopen(file, "r");
+    fscanf(fd,"%[^\n] ",b);
+    if(b[0]!='P'|| b[1] != '3')
+    {
+        printf("%s is not a PPM file!\n",file); 
+        exit(0);
+    }
+    printf("%s is a PPM file\n", file);
+    fscanf(fd, "%c",&c);
+
+    /* next, skip past the comments - any line starting with #*/
+    while(c == '#') 
+    {
+        fscanf(fd, "%[^\n] ", b);
+        printf("%s\n",b);
+        fscanf(fd, "%c",&c);
+    }
+    ungetc(c,fd); 
+
+    /* now get the dimensions and max colour value from the image */
+    fscanf(fd, "%d %d %d", &n, &m, &k);
+
+    printf("%d rows  %d columns  max value= %d\n",n,m,k);
+
+    /* calculate number of pixels and allocate storage for this */
+    nm = n*m;
+    img = (GLubyte*)malloc(3*sizeof(GLuint)*nm);
+    s=255.0/k;
+
+    /* for every pixel, grab the read green and blue values, storing them in the image data array */
+    for(i=0;i<nm;i++) 
+    {
+        fscanf(fd,"%d %d %d",&red, &green, &blue );
+        img[3*nm-3*i-3]=red*s;
+        img[3*nm-3*i-2]=green*s;
+        img[3*nm-3*i-1]=blue*s;
+    }
+
+    /* finally, set the "return parameters" (width, height, max) and return the image array */
+    *width = n;
+    *height = m;
+    *max = k;
+
+    return img;
+}
+//****************************************************************Texture***************
 
 void special(int key, int x, int y)
 {
@@ -393,6 +461,11 @@ void init(void)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(45, 1, 1, 1000);
+    //**************************************************************Texture********************************
+    glRasterPos2i(width,0); 
+    glPixelZoom(-1, 1); 
+    glDrawPixels(width,height,GL_RGB, GL_UNSIGNED_BYTE, img_data); 
+    //**************************************************************Texture********************************
     setMaterial(0);
 
     //enable backface culling
@@ -520,6 +593,11 @@ int main(int argc, char** argv)
     glutInit(&argc, argv);              //starts up GLUT
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
+    //**************************************************************Texture********************************
+    int k;
+    img_data = LoadPPM("interface.ppm", &width, &height, &k);
+    //**************************************************************Texture********************************
+    
     glutInitWindowSize(800, 800);
     glutInitWindowPosition(100, 100);
 
