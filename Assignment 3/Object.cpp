@@ -24,7 +24,8 @@ Object::Object()
     objectScale = 1;
 }
 
-void Object::setType(ObjectType t){
+void Object::setType(ObjectType t)
+{
     type = t;
     if(type==Cone)
     {
@@ -33,17 +34,20 @@ void Object::setType(ObjectType t){
 }
 
 //store material: where 0=redPlastic, 1=brass, 2=chrome, 3=silver, 4=greenrubber
-void Object::storeMaterial(int mat){
+void Object::storeMaterial(int mat)
+{
     material = mat;
 }
 
 //return material index number
-int Object::getMaterial(){
+int Object::getMaterial()
+{
     return material;
 }
 
 //return the objectType as an int, where 0=cube, 1=sphere, 2=teapot, 3=cone, 4=torus
-int Object::getType(){
+int Object::getType()
+{
     switch(type)
     {
     case Cube:
@@ -118,7 +122,7 @@ void Object::setScale(float scale)
     objectScale = scale;
 }
 
-void Object::drawObject()
+void Object::drawObject(bool isSelected)
 {
     glPushMatrix();
     glTranslatef(position[0], position[1], position[2]);            //move object to its position
@@ -143,34 +147,28 @@ void Object::drawObject()
         glutSolidTorus(objectScale-objectScale/2, objectScale, 16, 16);     //draws torus
         break;
     }
-    glPopMatrix();
-}
 
-void Object::drawWireframe()
-{
-    glPushMatrix();
-    glTranslatef(position[0], position[1], position[2]);            //set translation of object
-    glRotatef(orientation[0], 1, 0, 0);                             //set rotation of object
-    glRotatef(orientation[1], 0, 1, 0);
-    glRotatef(orientation[2], 0, 0, 1);
-    glColor3f(1, 0, 0); //color wireframe red
-    switch(type)
+    if (isSelected)
     {
-    case Cube:
-        glutWireCube(objectScale);
-        break;
-    case Sphere:
-        glutWireSphere(objectScale, 16, 16);
-        break;
-    case Teapot:
-        glutWireTeapot(objectScale);
-        break;
-    case Cone:
-        glutWireCone(objectScale, objectScale, 16, 16);
-        break;
-    case Torus:
-        glutWireTorus(objectScale-objectScale/2, objectScale, 16, 16);
-        break;
+        glColor3f(1, 0, 0);
+        switch(type)
+        {
+        case Cube:
+            glutWireCube(objectScale);
+            break;
+        case Sphere:
+            glutWireSphere(objectScale, 16, 16);
+            break;
+        case Teapot:
+            glutWireTeapot(objectScale);
+            break;
+        case Cone:
+            glutWireCone(objectScale, objectScale, 16, 16);
+            break;
+        case Torus:
+            glutWireTorus(objectScale-objectScale/2, objectScale, 16, 16);
+            break;
+        }
     }
     glPopMatrix();
 }

@@ -332,7 +332,7 @@ void keyboard(unsigned char key, int x, int y)
         objectList.push_back(selectedObject);
         break;
     }
-    
+
     break;
     }
     glutPostRedisplay();
@@ -405,11 +405,7 @@ void display(void)
         Object* objP = *it;
         Object obj = *objP;
         setMaterial(obj.getMaterial());
-        obj.drawObject();
-    }
-    if (selectedObject != 0)
-    {
-        selectedObject->drawWireframe();  //draw box around selected object
+        obj.drawObject(objP == selectedObject);
     }
 
     glPopMatrix();

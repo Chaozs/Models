@@ -41,8 +41,7 @@ class Object
         float getOrientationZ();
         float getScale();
 	int getMaterial();
-        void drawObject();
-        void drawWireframe();
+        void drawObject(bool);
 	void setType(ObjectType);
 	int getType();
 
