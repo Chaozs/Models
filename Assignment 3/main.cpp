@@ -27,7 +27,7 @@ Thien Trandinh / trandit / 001420634
 #include "MaterialStruct.h"
 #include "SaveLoadStates.h"
 
-float eye[] = {2, 2, 2};                    //initial camera location
+float eye[] = {0, 4, 2};                    //initial camera location
 float lookAt[] {0,0,0};                     //point camera is looking at
 float light0Pos[] = {-5, 3, 0, 1};          //initial light0 position
 float light1Pos[] = {5, 3, 0, 1};           //initial light1 positon
@@ -117,6 +117,7 @@ void special(int key, int x, int y)
                                         selectedObject->getPosY()-0.3, selectedObject->getPosZ()); //translate object in -y direction
         }
     }
+
     //scaling of objects
     else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_SHIFT)
     {
@@ -138,7 +139,7 @@ void special(int key, int x, int y)
     {
         if (selectedObject != 0)
         {
-            selectedObject->setOrientation(selectedObject->getOrientationX()-1,
+            selectedObject->setOrientation(selectedObject->getOrientationX()-2,
                                            selectedObject->getOrientationY(), selectedObject->getOrientationZ());  //rotate in -x axis
         }
     }
@@ -146,7 +147,7 @@ void special(int key, int x, int y)
     {
         if (selectedObject != 0)
         {
-            selectedObject->setOrientation(selectedObject->getOrientationX()+1,
+            selectedObject->setOrientation(selectedObject->getOrientationX()+2,
                                            selectedObject->getOrientationY(), selectedObject->getOrientationZ());  //rotate in +x axis
         }
     }
@@ -155,7 +156,7 @@ void special(int key, int x, int y)
         if (selectedObject != 0)
         {
             selectedObject->setOrientation(selectedObject->getOrientationX(),
-                                           selectedObject->getOrientationY(), selectedObject->getOrientationZ()+1);  //rotate in +z axis
+                                           selectedObject->getOrientationY(), selectedObject->getOrientationZ()+2);  //rotate in +z axis
         }
     }
     else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_ALT)
@@ -163,7 +164,7 @@ void special(int key, int x, int y)
         if (selectedObject != 0)
         {
             selectedObject->setOrientation(selectedObject->getOrientationX(),
-                                           selectedObject->getOrientationY(), selectedObject->getOrientationZ()-1);  //rotate in -z axis
+                                           selectedObject->getOrientationY(), selectedObject->getOrientationZ()-2);  //rotate in -z axis
         }
     }
     else if (key == GLUT_KEY_PAGE_UP && glutGetModifiers() == GLUT_ACTIVE_ALT)
@@ -171,7 +172,7 @@ void special(int key, int x, int y)
         if (selectedObject != 0)
         {
             selectedObject->setOrientation(selectedObject->getOrientationX(),
-                                           selectedObject->getOrientationY()+1, selectedObject->getOrientationZ());  //rotate in +y axis
+                                           selectedObject->getOrientationY()+2, selectedObject->getOrientationZ());  //rotate in +y axis
         }
     }
     else if (key == GLUT_KEY_PAGE_DOWN && glutGetModifiers() == GLUT_ACTIVE_ALT)
@@ -179,15 +180,16 @@ void special(int key, int x, int y)
         if (selectedObject != 0)
         {
             selectedObject->setOrientation(selectedObject->getOrientationX(),
-                                           selectedObject->getOrientationY()-1, selectedObject->getOrientationZ());  //rotate in -y axis
+                                           selectedObject->getOrientationY()-2, selectedObject->getOrientationZ());  //rotate in -y axis
         }
     }
+
     //camera control
-    else if (key == GLUT_KEY_LEFT)
+    else if (key == GLUT_KEY_LEFT && yAxisRotation > -90)
     {
         yAxisRotation--;        //rotate y-axis in negative direction
     }
-    else if (key == GLUT_KEY_RIGHT)
+    else if (key == GLUT_KEY_RIGHT && yAxisRotation < 0)
     {
         yAxisRotation++;        //rotate y-axis in positive direction
     }
@@ -195,7 +197,7 @@ void special(int key, int x, int y)
     {
         xAxisRotation++;        //rotate x-axis in positive direction
     }
-    else if (key == GLUT_KEY_DOWN && xAxisRotation > -45)
+    else if (key == GLUT_KEY_DOWN && xAxisRotation > -60)
     {
         xAxisRotation--;        //rotate x-axis in negative direction
     }
