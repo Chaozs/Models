@@ -166,7 +166,7 @@ void Object::drawObject(bool isSelected)
         case Octahedron:
             glPushMatrix();
             glScalef(objectScale, objectScale, objectScale);
-            glutSolidOctahedron();           //draws octahedron
+            glutWireOctahedron();           //draws octahedron
             glPopMatrix();
             break;
         case Cone:

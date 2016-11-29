@@ -40,9 +40,7 @@ list<Object*> objectList;                   //list of object addresses
 Object* selectedObject;                     //pointer to currently selected object
 
 //*********************Texture***************
-int height = 0;
-int width =0;
-int max =0; 
+int height, width, k;
 GLubyte* img_data;
 //*********************Texture***************
 
@@ -85,31 +83,26 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
     char b[100];
     float s;
     int red, green, blue;
-    
+
     /* first open file and check if it's an ASCII PPM (indicated by P3 at the start) */
     fd = fopen(file, "r");
     fscanf(fd,"%[^\n] ",b);
     if(b[0]!='P'|| b[1] != '3')
     {
-        printf("%s is not a PPM file!\n",file); 
         exit(0);
     }
-    printf("%s is a PPM file\n", file);
     fscanf(fd, "%c",&c);
 
     /* next, skip past the comments - any line starting with #*/
-    while(c == '#') 
+    while(c == '#')
     {
         fscanf(fd, "%[^\n] ", b);
-        printf("%s\n",b);
         fscanf(fd, "%c",&c);
     }
-    ungetc(c,fd); 
+    ungetc(c,fd);
 
     /* now get the dimensions and max colour value from the image */
     fscanf(fd, "%d %d %d", &n, &m, &k);
-
-    printf("%d rows  %d columns  max value= %d\n",n,m,k);
 
     /* calculate number of pixels and allocate storage for this */
     nm = n*m;
@@ -117,7 +110,7 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
     s=255.0/k;
 
     /* for every pixel, grab the read green and blue values, storing them in the image data array */
-    for(i=0;i<nm;i++) 
+    for(i=0; i<nm; i++)
     {
         fscanf(fd,"%d %d %d",&red, &green, &blue );
         img[3*nm-3*i-3]=red*s;
@@ -379,6 +372,37 @@ void keyboard(unsigned char key, int x, int y)
     case 'm':
         selectedObject->storeMaterial(materialCounter);
         break;
+    //disable texture
+    case 'u':
+        glDisable(GL_TEXTURE_2D);
+        break;
+    case 'i':
+        img_data = LoadPPM("interface.ppm", &width, &height, &k);
+        glEnable(GL_TEXTURE_2D);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img_data);
+//        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        break;
+    case 'o':
+        img_data = LoadPPM("interface.ppm", &width, &height, &k);
+        glEnable(GL_TEXTURE_2D);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img_data);
+//        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        break;
+    case 'p':
+        img_data = LoadPPM("interface.ppm", &width, &height, &k);
+        glEnable(GL_TEXTURE_2D);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img_data);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        break;
     //set material to redPlastic
     case '1':
         materialCounter = 0;
@@ -464,10 +488,11 @@ void init(void)
     glLoadIdentity();
     gluPerspective(45, 1, 1, 1000);
     //**************************************************************Texture********************************
-    glRasterPos2i(width,0); 
-    glPixelZoom(-1, 1); 
-    glDrawPixels(width,height,GL_RGB, GL_UNSIGNED_BYTE, img_data); 
+    glRasterPos2i(width,0);
+    glPixelZoom(-1, 1);
+    glDrawPixels(width,height,GL_RGB, GL_UNSIGNED_BYTE, img_data);
     //**************************************************************Texture********************************
+
     setMaterial(0);
 
     //enable backface culling
@@ -554,6 +579,8 @@ void display(void)
     glColor3f(0.5,0.5,0.5);
     //draws all objects
     glFrontFace(GL_CCW);
+    glEnable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
+    glEnable(GL_TEXTURE_GEN_T);
     for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
     {
         Object* objP = *it;
@@ -561,6 +588,8 @@ void display(void)
         setMaterial(obj.getMaterial());
         obj.drawObject(objP == selectedObject);
     }
+    glDisable(GL_TEXTURE_GEN_S); //disable texture coordinate generation
+    glDisable(GL_TEXTURE_GEN_T);
     glFrontFace(GL_CW);
 
     glPopMatrix();
@@ -588,6 +617,8 @@ void printInstructions()
     cout << "* KEYS 1 to 5 = changes current drawing material" << endl;
     cout << "* m = applies current drawing material to selected object" << endl;
     cout << "* KEYS 6 to 0 = creates a cube, sphere, octahedron, cone, torus respectively" << endl;
+    cout << "* u = disables textures" << endl;
+    cout << "* i, o, p = enables various textures" << endl << endl;
 
 }
 
@@ -599,11 +630,6 @@ int main(int argc, char** argv)
     glutInit(&argc, argv);              //starts up GLUT
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
-    //**************************************************************Texture********************************
-    int k;
-    img_data = LoadPPM("interface.ppm", &width, &height, &k);
-    //**************************************************************Texture********************************
-    
     glutInitWindowSize(800, 800);
     glutInitWindowPosition(100, 100);
 
