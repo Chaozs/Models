@@ -27,7 +27,7 @@ using namespace std;
 class Object
 {
 public:
-    enum ObjectType {Cube, Sphere, Teapot, Cone, Torus};
+    enum ObjectType {Cube, Sphere, Octahedron, Cone, Torus};
     Object();   //constructor
     void setPosition(float,float,float);
     void setOrientation(float,float,float);

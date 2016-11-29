@@ -76,7 +76,7 @@ list<Object*> SaveLoadStates::loadState(string fileName)
                 tempObj->setType(Object::Sphere);
                 break;
             case 2:
-                tempObj->setType(Object::Teapot);
+                tempObj->setType(Object::Octahedron);
                 break;
             case 3:
                 tempObj->setType(Object::Cone);

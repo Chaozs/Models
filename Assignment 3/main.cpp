@@ -345,11 +345,11 @@ void keyboard(unsigned char key, int x, int y)
         objectList.push_back(selectedObject);
     }
     break;
-    //create a teapot
+    //create a octahedron
     case '8':
     {
         selectedObject = new Object();
-        selectedObject->setType(Object::Teapot);
+        selectedObject->setType(Object::Octahedron);
         selectedObject->storeMaterial(materialCounter);
         objectList.push_back(selectedObject);
     }
@@ -394,7 +394,7 @@ void init(void)
     setMaterial(0);
 
     //enable backface culling
-    glFrontFace(GL_CW);
+    glFrontFace(GL_CCW);
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
 }
@@ -452,6 +452,7 @@ void display(void)
 
     addLights();
 
+    setMaterial(0);
     glPushMatrix();
     glColor3f(0.7,0.7,0.7);
     glTranslatef(0,-1,0);
@@ -503,7 +504,7 @@ void printInstructions()
     cout << "SHIFT + wasd = control movement of light source 2" << endl;
     cout << "s = saves the current object scene as a .txt file" << endl;
     cout << "l = loads the object scene at specified .txt file" << endl;
-    cout << "KEYS 6 to 0 = creates a cube, sphere, teapot, cone, torus respectively" << endl;
+    cout << "KEYS 6 to 0 = creates a cube, sphere, octahedron, cone, torus respectively" << endl;
 
 }
 

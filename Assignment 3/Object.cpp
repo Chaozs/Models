@@ -45,7 +45,7 @@ int Object::getMaterial()
     return material;
 }
 
-//return the objectType as an int, where 0=cube, 1=sphere, 2=teapot, 3=cone, 4=torus
+//return the objectType as an int, where 0=cube, 1=sphere, 2=octahedron, 3=cone, 4=torus
 int Object::getType()
 {
     switch(type)
@@ -56,7 +56,7 @@ int Object::getType()
     case Sphere:
         return 1;
         break;
-    case Teapot:
+    case Octahedron:
         return 2;
         break;
     case Cone:
@@ -137,8 +137,11 @@ void Object::drawObject(bool isSelected)
     case Sphere:
         glutSolidSphere(objectScale, 16, 16);   //draws sphere
         break;
-    case Teapot:
-        glutSolidTeapot(objectScale);           //draws teapot
+    case Octahedron:
+        glPushMatrix();
+        glScalef(objectScale, objectScale, objectScale);
+        glutSolidOctahedron();           //draws octahedron
+        glPopMatrix();
         break;
     case Cone:
         glutSolidCone(objectScale, objectScale, 16, 16);    //draws cone
@@ -159,8 +162,11 @@ void Object::drawObject(bool isSelected)
         case Sphere:
             glutWireSphere(objectScale, 16, 16);
             break;
-        case Teapot:
-            glutWireTeapot(objectScale);
+        case Octahedron:
+            glPushMatrix();
+            glScalef(objectScale, objectScale, objectScale);
+            glutSolidOctahedron();           //draws octahedron
+            glPopMatrix();
             break;
         case Cone:
             glutWireCone(objectScale, objectScale, 16, 16);
