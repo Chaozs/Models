@@ -61,7 +61,7 @@ list<Object*> SaveLoadStates::loadState(string fileName)
             posY = atof(strPosY.c_str());
             posZ = atof(strPosZ.c_str());
             oriX = atof(strOriX.c_str());
-            oriY = atof(strOriX.c_str());
+            oriY = atof(strOriY.c_str());
             oriZ = atof(strOriZ.c_str());
             scale = atof(strScale.c_str());
 
