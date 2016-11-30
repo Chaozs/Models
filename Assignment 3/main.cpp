@@ -26,6 +26,7 @@ Thien Trandinh / trandit / 001420634
 #include "Object.h"
 #include "MaterialStruct.h"
 #include "SaveLoadStates.h"
+#define BOUND_OFFSET 0.55
 
 float eye[] = {0, 4, 2};                    //initial camera location
 float lookAt[] {0,0,0};                     //point camera is looking at
@@ -38,6 +39,9 @@ float scaleFactor = 0.5/(sceneSize/50);     //scales scene to fit the screen
 int materialCounter = 1;                    //default material is brass
 list<Object*> objectList;                   //list of object addresses
 Object* selectedObject;                     //pointer to currently selected object
+int WINDOW_SIZE_HEIGHT = 800;
+int WINDOW_SIZE_WIDTH = 800;
+int mouseX = 0, mouseY = 0; //global vars to save mouse x/y coord
 
 //*********************Texture***************
 int height, width, k;
@@ -474,6 +478,75 @@ void keyboard(unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
+//calculate weather an intersection of our ray hits the teapot
+void CalcIntersections(Object* object){
+    //---Construct ray-----------------------------------------------------
+    //construct Ray
+    GLdouble R0[3], R1[3], Rd[3];
+    GLdouble modelMat[16], projMat[16];
+    GLint viewMat[4];
+
+    //populate mpv matricies
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelMat);
+    glGetDoublev(GL_PROJECTION_MATRIX, projMat);
+    glGetIntegerv(GL_VIEWPORT, viewMat);
+
+    //calculate near point
+    gluUnProject(mouseX, mouseY, 0.0, modelMat, projMat, viewMat, &R0[0], &R0[1], &R0[2]);
+    //calculate far point
+    gluUnProject(mouseX, mouseY, 1.0, modelMat, projMat, viewMat, &R1[0], &R1[1], &R1[2]);
+
+    //calcualte our ray from R0 and R1
+    
+    Rd[0] = R1[0] - R0[0];
+    Rd[1] = R1[1] - R0[1];
+    Rd[2] = R1[2] - R0[2];
+
+    //turn ray Rd into unit ray 
+    GLdouble m = sqrt(Rd[0]*Rd[0] + Rd[1]*Rd[1] + Rd[2]*Rd[2]);
+    Rd[0] /= m;
+    Rd[1] /= m;
+    Rd[2] /= m;
+
+    ///printf("R0: %f, %f, %f | ", R0[0], R0[1], R0[2]);
+    //printf("R1: %f, %f, %f | ", R1[0], R1[1], R1[2]);
+    //printf("Rd: %f, %f, %f | ", Rd[0], Rd[1], Rd[2]);
+
+    //---calculate intersection point now-----------------------------------
+    //approx the teapot with a box of radius 1 centered around the teapot centered
+    //goes against the xy plane to test the Intersection
+    //NOTE: this is not the code from slides, but rather proof of concept
+    //using assumtions which are true for this example only. 
+
+    //calculate t value from z dir;
+    double t = (((double)object ->getPosZ()) - R0[2])/Rd[2];
+
+    printf("t: %f | ", t);
+
+    //use t value to find x and y of our intersection point
+    double pt[3];
+    pt[0] = R0[0] + t * Rd[0];
+    pt[1] = R0[1] + t * Rd[1];
+    pt[2] = object -> getPosZ();
+    
+    printf("pt: %f, %f, %f | ", pt[0], pt[1], pt[2]);
+
+    //now that we have our point on the xy plane at the level of the teapot,
+    //use it to see if this point is inside a box centered at the teapots
+    //location
+    if(pt[0] > object->getPosX() - BOUND_OFFSET && pt[0] < object->getPosX() + BOUND_OFFSET &&
+        pt[1] > object->getPosY() - BOUND_OFFSET && pt[1] < object->getPosY() + BOUND_OFFSET &&
+        pt[2] > object->getPosZ() - BOUND_OFFSET && pt[2] < object->getPosZ() + BOUND_OFFSET){
+        object -> setIntersection(true);
+        cout << "Click works" << endl;
+    } else{
+        object -> setIntersection(true);
+    }
+
+    printf("\n");
+}
+
+
 //initialize
 void init(void)
 {
@@ -587,6 +660,7 @@ void display(void)
         Object obj = *objP;
         setMaterial(obj.getMaterial());
         obj.drawObject(objP == selectedObject);
+        CalcIntersections(objP);
     }
     glDisable(GL_TEXTURE_GEN_S); //disable texture coordinate generation
     glDisable(GL_TEXTURE_GEN_T);
@@ -622,6 +696,19 @@ void printInstructions()
 
 }
 
+
+
+
+//save our mouse coords when they change
+void mouse(int btn, int state, int x, int y){
+    if (btn == GLUT_LEFT_BUTTON && state == GLUT_DOWN){
+    mouseX = x;
+    mouseY = WINDOW_SIZE_HEIGHT - y;
+    cout << mouseX << endl;
+    cout << mouseY << endl;
+}
+}
+
 //main method
 int main(int argc, char** argv)
 {
@@ -637,6 +724,7 @@ int main(int argc, char** argv)
     glutDisplayFunc(display);           //registers "display" as the display callback function
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(special);
+    glutMouseFunc(mouse);
 
     glEnable(GL_DEPTH_TEST);
     init();

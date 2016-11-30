@@ -179,3 +179,12 @@ void Object::drawObject(bool isSelected)
     }
     glPopMatrix();
 }
+
+
+void Object::setIntersection(bool set){
+    intersect = set;
+}
+
+bool Object::getIntersection(){
+    return intersect;
+}

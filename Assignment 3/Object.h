@@ -44,11 +44,14 @@ public:
     void drawObject(bool);
     void setType(ObjectType);
     int getType();
+    bool getIntersection();
+    void setIntersection(bool);
 
 private:
     float position[3];
     float orientation[3];
     int material;
+    bool intersect;
     //TDO Bounding planes
     float objectScale;
     ObjectType type;
