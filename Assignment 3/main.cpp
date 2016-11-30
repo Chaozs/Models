@@ -41,7 +41,7 @@ list<Object*> objectList;                   //list of object addresses
 Object* selectedObject;                     //pointer to currently selected object
 int WINDOW_SIZE_HEIGHT = 800;
 int WINDOW_SIZE_WIDTH = 800;
-int mouseX = 0, mouseY = 0; //global vars to save mouse x/y coord
+int mouseX = 0, mouseY = 0;                 //global vars to save mouse x/y coord
 
 //*********************Texture***************
 int height, width, k;
@@ -478,10 +478,10 @@ void keyboard(unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
-//calculate weather an intersection of our ray hits the teapot
-void CalcIntersections(Object* object){
-    //---Construct ray-----------------------------------------------------
-    //construct Ray
+//calculate whether an intersection of our ray hits the teapot
+void CalcIntersections(Object* object)
+{
+    //construct ray
     GLdouble R0[3], R1[3], Rd[3];
     GLdouble modelMat[16], projMat[16];
     GLint viewMat[4];
@@ -491,56 +491,58 @@ void CalcIntersections(Object* object){
     glGetDoublev(GL_PROJECTION_MATRIX, projMat);
     glGetIntegerv(GL_VIEWPORT, viewMat);
 
-    //calculate near point
-    gluUnProject(mouseX, mouseY, 0.0, modelMat, projMat, viewMat, &R0[0], &R0[1], &R0[2]);
-    //calculate far point
-    gluUnProject(mouseX, mouseY, 1.0, modelMat, projMat, viewMat, &R1[0], &R1[1], &R1[2]);
+    gluUnProject(mouseX, mouseY, 0.0, modelMat, projMat, viewMat, &R0[0], &R0[1], &R0[2]);  //calculate near point
+    gluUnProject(mouseX, mouseY, 1.0, modelMat, projMat, viewMat, &R1[0], &R1[1], &R1[2]);  //calculate far point
 
     //calcualte our ray from R0 and R1
-    
     Rd[0] = R1[0] - R0[0];
     Rd[1] = R1[1] - R0[1];
     Rd[2] = R1[2] - R0[2];
 
-    //turn ray Rd into unit ray 
+    //turn ray Rd into unit ray
     GLdouble m = sqrt(Rd[0]*Rd[0] + Rd[1]*Rd[1] + Rd[2]*Rd[2]);
     Rd[0] /= m;
     Rd[1] /= m;
     Rd[2] /= m;
 
-    ///printf("R0: %f, %f, %f | ", R0[0], R0[1], R0[2]);
-    //printf("R1: %f, %f, %f | ", R1[0], R1[1], R1[2]);
-    //printf("Rd: %f, %f, %f | ", Rd[0], Rd[1], Rd[2]);
-
     //---calculate intersection point now-----------------------------------
     //approx the teapot with a box of radius 1 centered around the teapot centered
     //goes against the xy plane to test the Intersection
     //NOTE: this is not the code from slides, but rather proof of concept
-    //using assumtions which are true for this example only. 
+    //using assumtions which are true for this example only.
 
     //calculate t value from z dir;
-    double t = (((double)object ->getPosZ()) - R0[2])/Rd[2];
-
-    printf("t: %f | ", t);
+    double t = (((double)object->getPosZ()) - R0[2])/Rd[2];
 
     //use t value to find x and y of our intersection point
     double pt[3];
     pt[0] = R0[0] + t * Rd[0];
     pt[1] = R0[1] + t * Rd[1];
     pt[2] = object -> getPosZ();
-    
+    //handle camera movement
+    glPushMatrix();
+    glTranslatef(pt[0], pt[1], pt[2]);
+//    glScalef(scaleFactor, scaleFactor, scaleFactor);
+//    glRotatef(xAxisRotation, 1, 0, 0);
+//    glRotatef(yAxisRotation, 0, 1, 0);
+    glutSolidSphere(0.5, 16, 16);
+    glPopMatrix();
+
     printf("pt: %f, %f, %f | ", pt[0], pt[1], pt[2]);
 
     //now that we have our point on the xy plane at the level of the teapot,
     //use it to see if this point is inside a box centered at the teapots
     //location
     if(pt[0] > object->getPosX() - BOUND_OFFSET && pt[0] < object->getPosX() + BOUND_OFFSET &&
-        pt[1] > object->getPosY() - BOUND_OFFSET && pt[1] < object->getPosY() + BOUND_OFFSET &&
-        pt[2] > object->getPosZ() - BOUND_OFFSET && pt[2] < object->getPosZ() + BOUND_OFFSET){
+            pt[1] > object->getPosY() - BOUND_OFFSET && pt[1] < object->getPosY() + BOUND_OFFSET &&
+            pt[2] > object->getPosZ() - BOUND_OFFSET && pt[2] < object->getPosZ() + BOUND_OFFSET)
+    {
         object -> setIntersection(true);
         cout << "Click works" << endl;
-    } else{
-        object -> setIntersection(true);
+    }
+    else
+    {
+        object -> setIntersection(false);
     }
 
     printf("\n");
@@ -700,13 +702,14 @@ void printInstructions()
 
 
 //save our mouse coords when they change
-void mouse(int btn, int state, int x, int y){
-    if (btn == GLUT_LEFT_BUTTON && state == GLUT_DOWN){
-    mouseX = x;
-    mouseY = WINDOW_SIZE_HEIGHT - y;
-    cout << mouseX << endl;
-    cout << mouseY << endl;
-}
+void mouse(int btn, int state, int x, int y)
+{
+    if (btn == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+    {
+        //handle camera movement
+        mouseX = x;
+        mouseY = WINDOW_SIZE_HEIGHT - y;
+    }
 }
 
 //main method
