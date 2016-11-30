@@ -52,9 +52,10 @@ private:
     float orientation[3];
     int material;
     bool intersect;
-    //TDO Bounding planes
     float objectScale;
     ObjectType type;
+    float minPoint[3];
+    float maxPoint[3];
 };
 
 #endif

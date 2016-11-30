@@ -22,6 +22,14 @@ Object::Object()
 
     //sets initial scale to unit size
     objectScale = 1;
+
+    //sets initial position of min and max points
+    minPoint[0] = -0.5;
+    minPoint[1] = -0.5;
+    minPoint[2] = -0.5;
+    maxPoint[0] = 0.5;
+    maxPoint[1] = 0.5;
+    maxPoint[2] = 0.5;
 }
 
 void Object::setType(ObjectType t)
@@ -126,8 +134,8 @@ void Object::setScale(float scale)
 void Object::drawObject(bool isSelected)
 {
     glPushMatrix();
-    glTranslatef(position[0], position[1], position[2]);            //move object to its position
-    glRotatef(orientation[0], 1, 0, 0);                             //rotates object to its orientation
+    glTranslatef(position[0], position[1], position[2]);    //move object to its position
+    glRotatef(orientation[0], 1, 0, 0);                     //rotates object to its orientation
     glRotatef(orientation[1], 0, 1, 0);
     glRotatef(orientation[2], 0, 0, 1);
     switch(type)
@@ -136,55 +144,84 @@ void Object::drawObject(bool isSelected)
         glutSolidCube(objectScale);             //draws cube
         break;
     case Sphere:
-        glutSolidSphere(objectScale, 16, 16);   //draws sphere
+        glutSolidSphere(objectScale/2, 16, 16);   //draws sphere
         break;
     case Octahedron:
         glPushMatrix();
-        glScalef(objectScale, objectScale, objectScale);
-        glutSolidOctahedron();           //draws octahedron
+        glScalef(objectScale/2, objectScale/2, objectScale/2);
+        glutSolidOctahedron();                  //draws octahedron
         glPopMatrix();
         break;
     case Cone:
-        glutSolidCone(objectScale, objectScale, 16, 16);    //draws cone
+        glPushMatrix();
+        glTranslatef(0, 0, -objectScale/2);
+        glutSolidCone(objectScale/2, objectScale, 16, 16);    //draws cone
+        glPopMatrix();
         break;
     case Torus:
-        glutSolidTorus(objectScale-objectScale/2, objectScale, 16, 16);     //draws torus
+        glPushMatrix();
+        glScalef(1, 1, 3);
+        glutSolidTorus(objectScale/3-objectScale/6, objectScale/3, 16, 16);     //draws torus
+        glPopMatrix();
         break;
     }
 
+    //draws bounding box for selected object
     if (isSelected)
     {
         glColor3f(1, 0, 0);
-        switch(type)
-        {
-        case Cube:
-            glutWireCube(objectScale);
-            break;
-        case Sphere:
-            glutWireSphere(objectScale, 16, 16);
-            break;
-        case Octahedron:
-            glPushMatrix();
-            glScalef(objectScale, objectScale, objectScale);
-            glutWireOctahedron();           //draws octahedron
-            glPopMatrix();
-            break;
-        case Cone:
-            glutWireCone(objectScale, objectScale, 16, 16);
-            break;
-        case Torus:
-            glutWireTorus(objectScale-objectScale/2, objectScale, 16, 16);
-            break;
-        }
+        glBegin(GL_LINE_LOOP);
+        glVertex3f(minPoint[0], minPoint[1], minPoint[2]);
+        glVertex3f(minPoint[0], maxPoint[1], minPoint[2]);
+        glVertex3f(maxPoint[0], maxPoint[1], minPoint[2]);
+        glVertex3f(maxPoint[0], minPoint[1], minPoint[2]);
+        glEnd();
+
+        glBegin(GL_LINE_LOOP);
+        glVertex3f(maxPoint[0], minPoint[1], minPoint[2]);
+        glVertex3f(maxPoint[0], maxPoint[1], minPoint[2]);
+        glVertex3f(maxPoint[0], maxPoint[1], maxPoint[2]);
+        glVertex3f(maxPoint[0], minPoint[1], maxPoint[2]);
+        glEnd();
+
+        glBegin(GL_LINE_LOOP);
+        glVertex3f(minPoint[0], minPoint[1], minPoint[2]);
+        glVertex3f(minPoint[0], maxPoint[1], minPoint[2]);
+        glVertex3f(minPoint[0], maxPoint[1], maxPoint[2]);
+        glVertex3f(minPoint[0], minPoint[1], maxPoint[2]);
+
+        glBegin(GL_LINE_LOOP);
+        glVertex3f(minPoint[0], minPoint[1], minPoint[2]);
+        glVertex3f(minPoint[0], minPoint[1], maxPoint[2]);
+        glVertex3f(maxPoint[0], minPoint[1], maxPoint[2]);
+        glVertex3f(maxPoint[0], minPoint[1], minPoint[2]);
+        glEnd();
+
+        glBegin(GL_LINE_LOOP);
+        glVertex3f(minPoint[0], minPoint[1], maxPoint[2]);
+        glVertex3f(minPoint[0], maxPoint[1], maxPoint[2]);
+        glVertex3f(maxPoint[0], maxPoint[1], maxPoint[2]);
+        glVertex3f(maxPoint[0], minPoint[1], maxPoint[2]);
+        glEnd();
+
+        glBegin(GL_LINE_LOOP);
+        glVertex3f(minPoint[0], maxPoint[1], minPoint[2]);
+        glVertex3f(minPoint[0], maxPoint[1], maxPoint[2]);
+        glVertex3f(maxPoint[0], maxPoint[1], maxPoint[2]);
+        glVertex3f(maxPoint[0], maxPoint[1], minPoint[2]);
+        glEnd();
+        glEnd();
     }
     glPopMatrix();
 }
 
 
-void Object::setIntersection(bool set){
+void Object::setIntersection(bool set)
+{
     intersect = set;
 }
 
-bool Object::getIntersection(){
+bool Object::getIntersection()
+{
     return intersect;
 }
