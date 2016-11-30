@@ -140,6 +140,8 @@ void special(int key, int x, int y)
         {
             selectedObject->setPosition(selectedObject->getPosX()-0.3,
                                         selectedObject->getPosY(), selectedObject->getPosZ()); //translate object in -x direction
+            selectedObject->setMinPointX(selectedObject->getMinPointX()-0.3);
+            selectedObject->setMaxPointX(selectedObject->getMaxPointX()-0.3);
         }
     }
     else if (key == GLUT_KEY_RIGHT && glutGetModifiers() == GLUT_ACTIVE_CTRL)
@@ -148,6 +150,8 @@ void special(int key, int x, int y)
         {
             selectedObject->setPosition(selectedObject->getPosX()+0.3,
                                         selectedObject->getPosY(), selectedObject->getPosZ()); //translate object in +x direction
+            selectedObject->setMinPointX(selectedObject->getMinPointX()+0.3);
+            selectedObject->setMaxPointX(selectedObject->getMaxPointX()+0.3);
         }
     }
     else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_CTRL)
@@ -156,6 +160,8 @@ void special(int key, int x, int y)
         {
             selectedObject->setPosition(selectedObject->getPosX(),
                                         selectedObject->getPosY(), selectedObject->getPosZ()+0.3); //translate object in +z direction
+            selectedObject->setMinPointZ(selectedObject->getMinPointZ()+0.3);
+            selectedObject->setMaxPointZ(selectedObject->getMaxPointZ()+0.3);
         }
     }
     else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_CTRL)
@@ -164,6 +170,8 @@ void special(int key, int x, int y)
         {
             selectedObject->setPosition(selectedObject->getPosX(),
                                         selectedObject->getPosY(), selectedObject->getPosZ()-0.3); //translate object in -z direction
+            selectedObject->setMinPointZ(selectedObject->getMinPointZ()-0.3);
+            selectedObject->setMaxPointZ(selectedObject->getMaxPointZ()-0.3);
         }
     }
     else if (key == GLUT_KEY_PAGE_UP && glutGetModifiers() == GLUT_ACTIVE_CTRL)
@@ -172,6 +180,8 @@ void special(int key, int x, int y)
         {
             selectedObject->setPosition(selectedObject->getPosX(),
                                         selectedObject->getPosY()+0.3, selectedObject->getPosZ()); //translate object in +y direction
+            selectedObject->setMinPointY(selectedObject->getMinPointY()+0.3);
+            selectedObject->setMaxPointY(selectedObject->getMaxPointY()+0.3);
         }
     }
     else if (key == GLUT_KEY_PAGE_DOWN && glutGetModifiers() == GLUT_ACTIVE_CTRL)
@@ -180,6 +190,8 @@ void special(int key, int x, int y)
         {
             selectedObject->setPosition(selectedObject->getPosX(),
                                         selectedObject->getPosY()-0.3, selectedObject->getPosZ()); //translate object in -y direction
+            selectedObject->setMinPointY(selectedObject->getMinPointY()-0.3);
+            selectedObject->setMaxPointY(selectedObject->getMaxPointY()-0.3);
         }
     }
 
@@ -188,14 +200,28 @@ void special(int key, int x, int y)
     {
         if (selectedObject != 0 && selectedObject->getScale() < 50)
         {
+            float pointScaleChange = 0.05;
             selectedObject->setScale(selectedObject->getScale()+0.1);   //upscale object
+            selectedObject->setMinPointX(selectedObject->getMinPointX()-pointScaleChange);
+            selectedObject->setMinPointY(selectedObject->getMinPointY()-pointScaleChange);
+            selectedObject->setMinPointZ(selectedObject->getMinPointZ()-pointScaleChange);
+            selectedObject->setMaxPointX(selectedObject->getMaxPointX()+pointScaleChange);
+            selectedObject->setMaxPointY(selectedObject->getMaxPointY()+pointScaleChange);
+            selectedObject->setMaxPointZ(selectedObject->getMaxPointZ()+pointScaleChange);
         }
     }
     else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_SHIFT)
     {
         if (selectedObject != 0 && selectedObject->getScale() > 0.01)
         {
+            float pointScaleChange = 0.05;
             selectedObject->setScale(selectedObject->getScale()-0.1);   //downscale object
+            selectedObject->setMinPointX(selectedObject->getMinPointX()+pointScaleChange);
+            selectedObject->setMinPointY(selectedObject->getMinPointY()+pointScaleChange);
+            selectedObject->setMinPointZ(selectedObject->getMinPointZ()+pointScaleChange);
+            selectedObject->setMaxPointX(selectedObject->getMaxPointX()-pointScaleChange);
+            selectedObject->setMaxPointY(selectedObject->getMaxPointY()-pointScaleChange);
+            selectedObject->setMaxPointZ(selectedObject->getMaxPointZ()-pointScaleChange);
         }
     }
 

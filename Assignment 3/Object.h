@@ -46,6 +46,18 @@ public:
     int getType();
     bool getIntersection();
     void setIntersection(bool);
+    void setMinPointX(float);
+    void setMinPointY(float);
+    void setMinPointZ(float);
+    void setMaxPointX(float);
+    void setMaxPointY(float);
+    void setMaxPointZ(float);
+    float getMinPointX();
+    float getMinPointY();
+    float getMinPointZ();
+    float getMaxPointX();
+    float getMaxPointY();
+    float getMaxPointZ();
 
 private:
     float position[3];

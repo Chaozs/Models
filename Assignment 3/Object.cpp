@@ -141,35 +141,37 @@ void Object::drawObject(bool isSelected)
     switch(type)
     {
     case Cube:
-        glutSolidCube(objectScale);             //draws cube
+        glutSolidCube(objectScale);             //draws unit length cube
         break;
     case Sphere:
-        glutSolidSphere(objectScale/2, 16, 16);   //draws sphere
+        glutSolidSphere(objectScale/2, 16, 16);   //draws unit length sphere
         break;
     case Octahedron:
         glPushMatrix();
         glScalef(objectScale/2, objectScale/2, objectScale/2);
-        glutSolidOctahedron();                  //draws octahedron
+        glutSolidOctahedron();                  //draws unit length octahedron
         glPopMatrix();
         break;
     case Cone:
         glPushMatrix();
         glTranslatef(0, 0, -objectScale/2);
-        glutSolidCone(objectScale/2, objectScale, 16, 16);    //draws cone
+        glutSolidCone(objectScale/2, objectScale, 16, 16);    //draws unit length cone
         glPopMatrix();
         break;
     case Torus:
         glPushMatrix();
         glScalef(1, 1, 3);
-        glutSolidTorus(objectScale/3-objectScale/6, objectScale/3, 16, 16);     //draws torus
+        glutSolidTorus(objectScale/3-objectScale/6, objectScale/3, 16, 16);     //draws unit length torus
         glPopMatrix();
         break;
     }
+    glPopMatrix();
 
     //draws bounding box for selected object
     if (isSelected)
     {
         glColor3f(1, 0, 0);
+        //draws each face based on max/min point of bounding box
         glBegin(GL_LINE_LOOP);
         glVertex3f(minPoint[0], minPoint[1], minPoint[2]);
         glVertex3f(minPoint[0], maxPoint[1], minPoint[2]);
@@ -212,7 +214,6 @@ void Object::drawObject(bool isSelected)
         glEnd();
         glEnd();
     }
-    glPopMatrix();
 }
 
 
@@ -225,3 +226,64 @@ bool Object::getIntersection()
 {
     return intersect;
 }
+
+void Object::setMinPointX(float x)
+{
+    minPoint[0] = x;
+}
+
+void Object::setMinPointY(float y)
+{
+    minPoint[1] = y;
+}
+
+void Object::setMinPointZ(float z)
+{
+    minPoint[2] = z;
+}
+
+void Object::setMaxPointX(float x)
+{
+    maxPoint[0] = x;
+}
+
+void Object::setMaxPointY(float y)
+{
+    maxPoint[1] = y;
+}
+
+void Object::setMaxPointZ(float z)
+{
+    maxPoint[2] = z;
+}
+
+float Object::getMinPointX()
+{
+    return minPoint[0];
+}
+
+float Object::getMinPointY()
+{
+    return minPoint[1];
+}
+
+float Object::getMinPointZ()
+{
+    return minPoint[2];
+}
+
+float Object::getMaxPointX()
+{
+    return maxPoint[0];
+}
+
+float Object::getMaxPointY()
+{
+    return maxPoint[1];
+}
+
+float Object::getMaxPointZ()
+{
+    return maxPoint[2];
+}
+
