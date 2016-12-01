@@ -73,7 +73,53 @@ void setMaterial(int i)
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, current.shininess);
 }
 
-//calculate weather an intersection of our ray hits the teapot
+////calculates whether an intersection of ray and sphere occurs; assume obj is a sphere
+//bool sphereIntersection(Object* obj)
+//{
+//    //---Construct ray-----------------------------------------------------
+//    //construct Ray
+//    GLdouble R0[3], R1[3], Rd[3];
+//    GLdouble modelMat[16], projMat[16];
+//    GLint viewMat[4];
+//
+//    //populate mpv matricies
+//    glGetDoublev(GL_MODELVIEW_MATRIX, modelMat);
+//    glGetDoublev(GL_PROJECTION_MATRIX, projMat);
+//    glGetIntegerv(GL_VIEWPORT, viewMat);
+//
+//    //calculate near point
+//    gluUnProject(mouseX, mouseY, 0.0, modelMat, projMat, viewMat, &R0[0], &R0[1], &R0[2]);
+//    //calculate far point
+//    gluUnProject(mouseX, mouseY, 1.0, modelMat, projMat, viewMat, &R1[0], &R1[1], &R1[2]);
+//
+//    //calculate our ray from R0 and R1
+//    Rd[0] = R1[0] - R0[0];
+//    Rd[1] = R1[1] - R0[1];
+//    Rd[2] = R1[2] - R0[2];
+//
+//    //turn ray Rd into unit ray
+//    GLdouble m = sqrt(Rd[0]*Rd[0] + Rd[1]*Rd[1] + Rd[2]*Rd[2]);
+//    Rd[0] /= m;
+//    Rd[1] /= m;
+//    Rd[2] /= m;
+//
+//    float vpc[3];   //vector from origin ray point and centre of sphere
+//    vpc[0] = obj->getPosX() - (float) R0[0];
+//    vpc[1] = obj->getPosY() - (float) R0[1];
+//    vpc[2] = obj->getPosZ() - (float) R0[2];
+//    float vpcMagnitude = sqrt(vpc[0]*vpc[0] + vpc[1]*vpc[1] + vpc[2]*vpc[2]);
+//
+//    if (vpc[0] < Rd[0] && vpc[1] < Rd[1] && vpc[2] < Rd[2]) //when sphere is behind origin of ray
+//    {
+//        if (vpcMagnitude > obj->getScale()/2)
+//        {
+//            return false;
+//        }
+//        else if (vpcMagnitude == obj->getScale()/2)
+//    }
+//}
+
+//calculate whether an intersection of our ray hits the teapot
 bool CalcIntersections(Object* obj)
 {
     //---Construct ray-----------------------------------------------------
@@ -92,7 +138,7 @@ bool CalcIntersections(Object* obj)
     //calculate far point
     gluUnProject(mouseX, mouseY, 1.0, modelMat, projMat, viewMat, &R1[0], &R1[1], &R1[2]);
 
-    //calcualte our ray from R0 and R1
+    //calculate our ray from R0 and R1
     Rd[0] = R1[0] - R0[0];
     Rd[1] = R1[1] - R0[1];
     Rd[2] = R1[2] - R0[2];
@@ -134,27 +180,27 @@ bool CalcIntersections(Object* obj)
     //use it to see if this point is inside a box centered at the teapots
     //location
 
-    if(ptX[0] > obj->getPosX() - obj->getScale()/2 &&
-            ptX[0] < obj->getPosX() + obj->getScale()/2 &&
-            ptX[1] > obj->getPosY()+1 - obj->getScale()/2 &&
-            ptX[1] < obj->getPosY()+1 + obj->getScale()/2 &&
-            ptX[2] > obj->getPosZ() - obj->getScale()/2 &&
-            ptX[2] < obj->getPosZ() + obj->getScale()/2)
-    {
-        cout << "*** Object selected X" << endl;
-        return true;
-    }
+//    if(ptX[0] > obj->getPosX() - obj->getScale()/2 &&
+//            ptX[0] < obj->getPosX() + obj->getScale()/2 &&
+//            ptX[1] > obj->getPosY()+1 - obj->getScale()/2 &&
+//            ptX[1] < obj->getPosY()+1 + obj->getScale()/2 &&
+//            ptX[2] > obj->getPosZ() - obj->getScale()/2 &&
+//            ptX[2] < obj->getPosZ() + obj->getScale()/2)
+//    {
+//        cout << "*** Object selected X" << endl;
+//        return true;
+//    }
 
-    if(ptY[0] > obj->getPosX() - obj->getScale()/2 &&
-            ptY[0] < obj->getPosX() + obj->getScale()/2 &&
-            ptY[1] > obj->getPosY()+1 - obj->getScale()/2 &&
-            ptY[1] < obj->getPosY()+1 + obj->getScale()/2 &&
-            ptY[2] > obj->getPosZ() - obj->getScale()/2 &&
-            ptY[2] < obj->getPosZ() + obj->getScale()/2)
-    {
-        cout << "***** Object selected Y" << endl;
-        return true;
-    }
+//    if(ptY[0] > obj->getPosX() - obj->getScale()/2 &&
+//            ptY[0] < obj->getPosX() + obj->getScale()/2 &&
+//            ptY[1] > obj->getPosY()+1 - obj->getScale()/2 &&
+//            ptY[1] < obj->getPosY()+1 + obj->getScale()/2 &&
+//            ptY[2] > obj->getPosZ() - obj->getScale()/2 &&
+//            ptY[2] < obj->getPosZ() + obj->getScale()/2)
+//    {
+//        cout << "***** Object selected Y" << endl;
+//        return true;
+//    }
 
     if(ptZ[0] > obj->getPosX() - obj->getScale()/2 &&
             ptZ[0] < obj->getPosX() + obj->getScale()/2 &&
@@ -621,37 +667,6 @@ void keyboard(unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
-/*//calculate whether an intersection of our ray hits the teapot
-bool CalcIntersections(Object* object)
-{
-    //RAY INTERSECTION
-    //construct ray
-    GLdouble R0[3], R1[3], Rd[3];
-    GLdouble modelMat[16], projMat[16];
-    GLint viewMat[4];
-
-    //populate mpv matricies
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelMat);
-    glGetDoublev(GL_PROJECTION_MATRIX, projMat);
-    glGetIntegerv(GL_VIEWPORT, viewMat);
-
-    gluUnProject(mouseX, mouseY, 0.0, modelMat, projMat, viewMat, &R0[0], &R0[1], &R0[2]);  //calculate near point
-    gluUnProject(mouseX, mouseY, 1.0, modelMat, projMat, viewMat, &R1[0], &R1[1], &R1[2]);  //calculate far point
-
-    //calculate our ray from R0 and R1
-    Rd[0] = R1[0] - R0[0];
-    Rd[1] = R1[1] - R0[1];
-    Rd[2] = R1[2] - R0[2];
-
-    //turn ray Rd into unit ray
-    GLdouble m = sqrt(Rd[0]*Rd[0] + Rd[1]*Rd[1] + Rd[2]*Rd[2]);
-    Rd[0] /= m;
-    Rd[1] /= m;
-    Rd[2] /= m;
-
-    return false;
-}*/
-
 //initialize
 void init(void)
 {
@@ -747,18 +762,6 @@ void display(void)
     glScalef(1,1,0.01);
     glutSolidCube(100);     //draws plane
     glPopMatrix();
-
-//    CalcIntersections();
-//    glPushMatrix();
-//    glTranslatef(teapot.posX, teapot.posY, teapot.posZ);
-//
-//    if(teapot.intersect)
-//        glColor3f(1,0,0); //red
-//    else
-//        glColor3f(1, 1, 0); // yellow
-//
-//    glutSolidCube(1);
-//    glPopMatrix();
 
     glColor3f(0.5,0.5,0.5);
     //draws all objects
