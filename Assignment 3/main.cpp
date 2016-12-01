@@ -607,6 +607,15 @@ void keyboard(unsigned char key, int x, int y)
         objectList.push_back(selectedObject);
         break;
     }
+    //create a house shape
+    case 'y':
+    {
+        selectedObject = new Object();
+        selectedObject->setType(Object::House);
+        selectedObject->storeMaterial(materialCounter);
+        objectList.push_back(selectedObject);
+        break;
+    }
     break;
     }
     glutPostRedisplay();

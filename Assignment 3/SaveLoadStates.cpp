@@ -84,6 +84,9 @@ list<Object*> SaveLoadStates::loadState(string fileName)
             case 4:
                 tempObj->setType(Object::Torus);
                 break;
+            case 5:
+                tempObj->setType(Object::House);
+                break;
             }
             //sets all other values per shape
             tempObj->storeMaterial(mat);
