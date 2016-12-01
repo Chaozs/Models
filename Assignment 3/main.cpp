@@ -26,6 +26,7 @@ Thien Trandinh / trandit / 001420634
 #include "Object.h"
 #include "MaterialStruct.h"
 #include "SaveLoadStates.h"
+#define BOUND_OFFSET 0.55
 
 float camPos[] = {10, 10, 10};	            //initial camera location
 float camUp[] = {0, 1, 0};                  //up vector of the camera
@@ -44,6 +45,12 @@ int mouseX = 0, mouseY = 0;                 //global vars to save mouse x/y coor
 int height, width, k;
 GLubyte* img_data;
 //*********************Texture***************
+
+struct TeapotStruct{
+    float posX, posY, posZ;
+    bool intersect;
+} teapot;
+
 
 void setMaterial(int i)
 {
@@ -71,6 +78,72 @@ void setMaterial(int i)
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, current.specular);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, current.shininess);
 }
+
+//calculate weather an intersection of our ray hits the teapot
+void CalcIntersections(){
+    //---Construct ray-----------------------------------------------------
+    //construct Ray
+    GLdouble R0[3], R1[3], Rd[3];
+    GLdouble modelMat[16], projMat[16];
+    GLint viewMat[4];
+
+    //populate mpv matricies
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelMat);
+    glGetDoublev(GL_PROJECTION_MATRIX, projMat);
+    glGetIntegerv(GL_VIEWPORT, viewMat);
+
+    //calculate near point
+    gluUnProject(mouseX, mouseY, 0.0, modelMat, projMat, viewMat, &R0[0], &R0[1], &R0[2]);
+    //calculate far point
+    gluUnProject(mouseX, mouseY, 1.0, modelMat, projMat, viewMat, &R1[0], &R1[1], &R1[2]);
+
+    //calcualte our ray from R0 and R1
+    Rd[0] = R1[0] - R0[0];
+    Rd[1] = R1[1] - R0[1];
+    Rd[2] = R1[2] - R0[2];
+
+    //turn ray Rd into unit ray 
+    GLdouble m = sqrt(Rd[0]*Rd[0] + Rd[1]*Rd[1] + Rd[2]*Rd[2]);
+    Rd[0] /= m;
+    Rd[1] /= m;
+    Rd[2] /= m;
+
+    printf("R0: %f, %f, %f | ", R0[0], R0[1], R0[2]);
+    printf("R1: %f, %f, %f | ", R1[0], R1[1], R1[2]);
+    printf("Rd: %f, %f, %f | ", Rd[0], Rd[1], Rd[2]);
+
+    //---calculate intersection point now-----------------------------------
+    //approx the teapot with a box of radius 1 centered around the teapot centered
+    //goes against the xy plane to test the Intersection
+    //NOTE: this is not the code from slides, but rather proof of concept
+    //using assumtions which are true for this example only. 
+
+    //calculate t value from z dir;
+    double t = (((double)teapot.posZ) - R0[2])/Rd[2];
+
+    printf("t: %f | ", t);
+
+    //use t value to find x and y of our intersection point
+    double pt[3];
+    pt[0] = R0[0] + t * Rd[0];
+    pt[1] = R0[1] + t * Rd[1];
+    pt[2] = teapot.posZ;
+    
+    printf("pt: %f, %f, %f | ", pt[0], pt[1], pt[2]);
+
+    //now that we have our point on the xy plane at the level of the teapot,
+    //use it to see if this point is inside a box centered at the teapots
+    //location
+    if(pt[0] > teapot.posX - BOUND_OFFSET && pt[0] < teapot.posX + BOUND_OFFSET &&
+        pt[1] > teapot.posY - BOUND_OFFSET && pt[1] < teapot.posY + BOUND_OFFSET &&
+        pt[2] > teapot.posZ - BOUND_OFFSET && pt[2] < teapot.posZ + BOUND_OFFSET)
+        teapot.intersect = true;
+    else
+        teapot.intersect = false;
+
+    printf("\n");
+}
+
 
 //**************************************************************Texture***************
 GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
@@ -508,7 +581,7 @@ void keyboard(unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
-//calculate whether an intersection of our ray hits the teapot
+/*//calculate whether an intersection of our ray hits the teapot
 bool CalcIntersections(Object* object)
 {
     //RAY INTERSECTION
@@ -537,7 +610,7 @@ bool CalcIntersections(Object* object)
     Rd[2] /= m;
 
     return false;
-}
+}*/
 
 //initialize
 void init(void)
@@ -635,6 +708,18 @@ void display(void)
     glutSolidCube(100);     //draws plane
     glPopMatrix();
 
+    CalcIntersections();
+    glPushMatrix();
+        glTranslatef(teapot.posX, teapot.posY, teapot.posZ);
+
+        if(teapot.intersect)
+            glColor3f(1,0,0); //red
+        else
+            glColor3f(1, 1, 0); // yellow
+
+        glutSolidCube(1);
+    glPopMatrix();
+
     glColor3f(0.5,0.5,0.5);
     //draws all objects
     glFrontFace(GL_CCW);
@@ -687,16 +772,8 @@ void mouse(int btn, int state, int x, int y)
         //handle camera movement
         mouseX = x;
         mouseY = WINDOW_SIZE_HEIGHT - y;
-        for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
-        {
-            if (CalcIntersections(*it))
-            {
-                selectedObject = *it;
-                cout << "Object Selected" << endl;
-            }
-        }
-    glutPostRedisplay();
     }
+    glutPostRedisplay();
 }
 
 //main method
