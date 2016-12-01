@@ -799,7 +799,6 @@ void mouse(int btn, int state, int x, int y)
 {
     if (btn == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
     {
-        //handle camera movement
         mouseX = x;
         mouseY = WINDOW_SIZE_HEIGHT - y;
         for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
@@ -809,6 +808,19 @@ void mouse(int btn, int state, int x, int y)
                 selectedObject = *it;
             }
         }
+    }
+    else if (btn == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
+    {
+        mouseX = x;
+        mouseY = WINDOW_SIZE_HEIGHT - y;
+        for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
+        {
+            if (CalcIntersections(*it))
+            {
+                selectedObject = *it;
+            }
+        }
+        objectList.remove(selectedObject);
     }
     glutPostRedisplay();
 }
