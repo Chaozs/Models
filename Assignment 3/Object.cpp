@@ -138,6 +138,7 @@ void Object::drawObject(bool isSelected)
     glRotatef(orientation[0], 1, 0, 0);                     //rotates object to its orientation
     glRotatef(orientation[1], 0, 1, 0);
     glRotatef(orientation[2], 0, 0, 1);
+    glColor3f(0.5, 0.5, 0.5);
     switch(type)
     {
     case Cube:
@@ -211,7 +212,6 @@ void Object::drawObject(bool isSelected)
         glVertex3f(minPoint[0], maxPoint[1], maxPoint[2]);
         glVertex3f(maxPoint[0], maxPoint[1], maxPoint[2]);
         glVertex3f(maxPoint[0], maxPoint[1], minPoint[2]);
-        glEnd();
         glEnd();
     }
 }

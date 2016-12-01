@@ -504,9 +504,40 @@ void keyboard(unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
-//calculate whether an intersection of our ray hits the teapot
-void CalcIntersections(Object* object)
+float Hit[3];
+
+int inline GetIntersection(float fDst1, float fDst2, GLdouble P1[3], GLdouble P2[3])
 {
+    if ((fDst1 * fDst2) >= 0.0f) return 0;
+    if (fDst1 == fDst2) return 0;
+
+    float fP1[3];
+    float fP2[3];
+    fP1[0] = P1[0];
+    fP1[1] = P1[1];
+    fP1[2] = P1[2];
+    fP2[0] = P2[0];
+    fP2[1] = P2[1];
+    fP2[2] = P2[2];
+
+    Hit[0] = fP1[0] + (fP2[0]-fP1[0]) * (-fDst1/(fDst2-fDst1));
+    Hit[1] = fP1[1] + (fP2[1]-fP1[1]) * (-fDst1/(fDst2-fDst1));
+    Hit[2] = fP1[2] + (fP2[2]-fP1[2]) * (-fDst1/(fDst2-fDst1));
+    return 1;
+}
+
+int inline InBox(Object* object, int Axis)
+{
+    if ( Axis==1 && Hit[2] > object->getMinPointZ() && Hit[2] < object->getMaxPointZ() && Hit[1] > object->getMinPointY() && Hit[1] < object->getMaxPointY()) return 1;
+    if ( Axis==2 && Hit[2] > object->getMinPointZ() && Hit[2] < object->getMaxPointZ() && Hit[0] > object->getMinPointX() && Hit[0] < object->getMaxPointX()) return 1;
+    if ( Axis==3 && Hit[0] > object->getMinPointX() && Hit[0] < object->getMaxPointX() && Hit[1] > object->getMinPointY() && Hit[1] < object->getMaxPointY()) return 1;
+    return 0;
+}
+
+//calculate whether an intersection of our ray hits the teapot
+bool CalcIntersections(Object* object)
+{
+    //RAY INTERSECTION
     //construct ray
     GLdouble R0[3], R1[3], Rd[3];
     GLdouble modelMat[16], projMat[16];
@@ -520,60 +551,56 @@ void CalcIntersections(Object* object)
     gluUnProject(mouseX, mouseY, 0.0, modelMat, projMat, viewMat, &R0[0], &R0[1], &R0[2]);  //calculate near point
     gluUnProject(mouseX, mouseY, 1.0, modelMat, projMat, viewMat, &R1[0], &R1[1], &R1[2]);  //calculate far point
 
-    //calcualte our ray from R0 and R1
-    Rd[0] = R1[0] - R0[0];
-    Rd[1] = R1[1] - R0[1];
-    Rd[2] = R1[2] - R0[2];
+    //calculate our ray from R0 and R1
+//    Rd[0] = R1[0] - R0[0];
+//    Rd[1] = R1[1] - R0[1];
+//    Rd[2] = R1[2] - R0[2];
 
     //turn ray Rd into unit ray
-    GLdouble m = sqrt(Rd[0]*Rd[0] + Rd[1]*Rd[1] + Rd[2]*Rd[2]);
-    Rd[0] /= m;
-    Rd[1] /= m;
-    Rd[2] /= m;
+//    GLdouble m = sqrt(Rd[0]*Rd[0] + Rd[1]*Rd[1] + Rd[2]*Rd[2]);
+//    Rd[0] /= m;
+//    Rd[1] /= m;
+//    Rd[2] /= m;
 
-    //---calculate intersection point now-----------------------------------
-    //approx the teapot with a box of radius 1 centered around the teapot centered
-    //goes against the xy plane to test the Intersection
-    //NOTE: this is not the code from slides, but rather proof of concept
-    //using assumtions which are true for this example only.
+    //scale transformation for ray
+    R0[0] = R0[0]/(GLdouble)scaleFactor;
+    R0[1] = R0[1]/(GLdouble)scaleFactor;
+    R0[2] = R0[2]/(GLdouble)scaleFactor;
+    R1[0] = R1[0]/(GLdouble)scaleFactor;
+    R1[1] = R1[1]/(GLdouble)scaleFactor;
+    R1[2] = R1[2]/(GLdouble)scaleFactor;
+//    //x-axis camera rotations for ray
+//    R0[1] = R0[1]*cos(xAxisRotation) - R0[2]*sin(xAxisRotation);
+//    R0[2] = R0[1]*cos(xAxisRotation) + R0[2]*sin(xAxisRotation);
+//    R1[1] = R1[1]*cos(xAxisRotation) - R1[2]*sin(xAxisRotation);
+//    R1[2] = R1[1]*cos(xAxisRotation) + R1[2]*sin(xAxisRotation);
+//    //y-axis camera rotations for ray
+//    R0[0] = R0[0]*cos(yAxisRotation) + R0[2]*sin(yAxisRotation);
+//    R0[2] = R0[2]*cos(yAxisRotation) - R0[0]*sin(yAxisRotation);
+//    R1[0] = R1[0]*cos(yAxisRotation) + R1[2]*sin(yAxisRotation);
+//    R1[2] = R0[2]*cos(yAxisRotation) - R0[0]*sin(yAxisRotation);
 
-    //calculate t value from z dir;
-    double t = (((double)object->getPosZ()) - R0[2])/Rd[2];
+    //RAY SELECTION
+    if (R1[0] < object->getMinPointX() && R0[0] < object->getMinPointX()) return false;
+    if (R1[0] > object->getMaxPointX() && R0[0] > object->getMaxPointX()) return false;
+    if (R1[1] < object->getMinPointY() && R0[1] < object->getMinPointY()) return false;
+    if (R1[1] > object->getMaxPointY() && R0[1] > object->getMaxPointY()) return false;
+    if (R1[2] < object->getMinPointZ() && R0[2] < object->getMinPointZ()) return false;
+    if (R1[2] > object->getMaxPointZ() && R0[2] > object->getMaxPointZ()) return false;
+    if (R0[0] > object->getMinPointX() && R0[0] < object->getMaxPointX() &&
+            R0[1] > object->getMinPointY() && R0[1] < object->getMaxPointY() &&
+            R1[2] > object->getMinPointZ() && R1[2] < object->getMaxPointZ()) return true;
 
-    //use t value to find x and y of our intersection point
-    double pt[3];
-    pt[0] = R0[0] + t * Rd[0];
-    pt[1] = R0[1] + t * Rd[1];
-    pt[2] = object -> getPosZ();
-    //handle camera movement
-    glPushMatrix();
-    glTranslatef(pt[0], pt[1], pt[2]);
-//    glScalef(scaleFactor, scaleFactor, scaleFactor);
-//    glRotatef(xAxisRotation, 1, 0, 0);
-//    glRotatef(yAxisRotation, 0, 1, 0);
-    glutSolidSphere(0.5, 16, 16);
-    glPopMatrix();
+    if ((GetIntersection((float) R0[0]-object->getMinPointX(), (float) R1[0]-object->getMinPointX(), R0, R1) && InBox(object, 1))
+            || (GetIntersection((float) R0[1]-object->getMinPointY(), (float) R1[1]-object->getMinPointY(), R0, R1) && InBox(object, 2))
+            || (GetIntersection((float) R0[2]-object->getMinPointZ(), (float) R1[2]-object->getMinPointZ(), R0, R1) && InBox(object, 3))
+            || (GetIntersection((float) R0[0]-object->getMaxPointX(), (float) R1[0]-object->getMaxPointX(), R0, R1) && InBox(object, 1))
+            || (GetIntersection((float) R0[1]-object->getMaxPointY(), (float) R1[1]-object->getMaxPointY(), R0, R1) && InBox(object, 2))
+            || (GetIntersection((float) R0[2]-object->getMaxPointZ(), (float) R1[2]-object->getMaxPointZ(), R0, R1) && InBox(object, 3)))
+        return true;
 
-    printf("pt: %f, %f, %f | ", pt[0], pt[1], pt[2]);
-
-    //now that we have our point on the xy plane at the level of the teapot,
-    //use it to see if this point is inside a box centered at the teapots
-    //location
-    if(pt[0] > object->getPosX() - BOUND_OFFSET && pt[0] < object->getPosX() + BOUND_OFFSET &&
-            pt[1] > object->getPosY() - BOUND_OFFSET && pt[1] < object->getPosY() + BOUND_OFFSET &&
-            pt[2] > object->getPosZ() - BOUND_OFFSET && pt[2] < object->getPosZ() + BOUND_OFFSET)
-    {
-        object -> setIntersection(true);
-        cout << "Click works" << endl;
-    }
-    else
-    {
-        object -> setIntersection(false);
-    }
-
-    printf("\n");
+    return false;
 }
-
 
 //initialize
 void init(void)
@@ -688,7 +715,6 @@ void display(void)
         Object obj = *objP;
         setMaterial(obj.getMaterial());
         obj.drawObject(objP == selectedObject);
-        CalcIntersections(objP);
     }
     glDisable(GL_TEXTURE_GEN_S); //disable texture coordinate generation
     glDisable(GL_TEXTURE_GEN_T);
@@ -724,9 +750,6 @@ void printInstructions()
 
 }
 
-
-
-
 //save our mouse coords when they change
 void mouse(int btn, int state, int x, int y)
 {
@@ -735,6 +758,15 @@ void mouse(int btn, int state, int x, int y)
         //handle camera movement
         mouseX = x;
         mouseY = WINDOW_SIZE_HEIGHT - y;
+        for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
+        {
+            if (CalcIntersections(*it))
+            {
+                selectedObject = *it;
+                cout << "Object Selected" << endl;
+            }
+        }
+    glutPostRedisplay();
     }
 }
 
