@@ -286,4 +286,3 @@ float Object::getMaxPointZ()
 {
     return maxPoint[2];
 }
-

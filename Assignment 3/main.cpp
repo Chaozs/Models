@@ -46,12 +46,6 @@ int height, width, k;
 GLubyte* img_data;
 //*********************Texture***************
 
-struct TeapotStruct{
-    float posX, posY, posZ;
-    bool intersect;
-} teapot;
-
-
 void setMaterial(int i)
 {
     MaterialStruct current;
@@ -80,7 +74,8 @@ void setMaterial(int i)
 }
 
 //calculate weather an intersection of our ray hits the teapot
-void CalcIntersections(){
+bool CalcIntersections(Object* obj)
+{
     //---Construct ray-----------------------------------------------------
     //construct Ray
     GLdouble R0[3], R1[3], Rd[3];
@@ -102,46 +97,76 @@ void CalcIntersections(){
     Rd[1] = R1[1] - R0[1];
     Rd[2] = R1[2] - R0[2];
 
-    //turn ray Rd into unit ray 
+    //turn ray Rd into unit ray
     GLdouble m = sqrt(Rd[0]*Rd[0] + Rd[1]*Rd[1] + Rd[2]*Rd[2]);
     Rd[0] /= m;
     Rd[1] /= m;
     Rd[2] /= m;
 
-    printf("R0: %f, %f, %f | ", R0[0], R0[1], R0[2]);
-    printf("R1: %f, %f, %f | ", R1[0], R1[1], R1[2]);
-    printf("Rd: %f, %f, %f | ", Rd[0], Rd[1], Rd[2]);
-
     //---calculate intersection point now-----------------------------------
     //approx the teapot with a box of radius 1 centered around the teapot centered
     //goes against the xy plane to test the Intersection
     //NOTE: this is not the code from slides, but rather proof of concept
-    //using assumtions which are true for this example only. 
+    //using assumtions which are true for this example only.
 
-    //calculate t value from z dir;
-    double t = (((double)teapot.posZ) - R0[2])/Rd[2];
-
-    printf("t: %f | ", t);
+    //calculate t value for all three directions
+    double tX = (((double)obj->getPosX()) - R0[0])/Rd[0];
+    double tY = (((double)obj->getPosY()+1) - R0[1])/Rd[1];
+    double tZ = (((double)obj->getPosZ()) - R0[2])/Rd[2];
 
     //use t value to find x and y of our intersection point
-    double pt[3];
-    pt[0] = R0[0] + t * Rd[0];
-    pt[1] = R0[1] + t * Rd[1];
-    pt[2] = teapot.posZ;
-    
-    printf("pt: %f, %f, %f | ", pt[0], pt[1], pt[2]);
+    double ptX[3];
+    ptX[0] = obj->getPosX();
+    ptX[1] = R0[1] + tX * Rd[1];
+    ptX[2] = R0[2] + tX * Rd[2];
+
+    double ptY[3];
+    ptY[0] = R0[0] + tY * Rd[0];
+    ptY[1] = obj->getPosY()+1;
+    ptY[2] = R0[2] + tY * Rd[2];
+
+    double ptZ[3];
+    ptZ[0] = R0[0] + tZ * Rd[0];
+    ptZ[1] = R0[1] + tZ * Rd[1];
+    ptZ[2] = obj->getPosZ();
 
     //now that we have our point on the xy plane at the level of the teapot,
     //use it to see if this point is inside a box centered at the teapots
     //location
-    if(pt[0] > teapot.posX - BOUND_OFFSET && pt[0] < teapot.posX + BOUND_OFFSET &&
-        pt[1] > teapot.posY - BOUND_OFFSET && pt[1] < teapot.posY + BOUND_OFFSET &&
-        pt[2] > teapot.posZ - BOUND_OFFSET && pt[2] < teapot.posZ + BOUND_OFFSET)
-        teapot.intersect = true;
-    else
-        teapot.intersect = false;
 
-    printf("\n");
+    if(ptX[0] > obj->getPosX() - obj->getScale()/2 &&
+            ptX[0] < obj->getPosX() + obj->getScale()/2 &&
+            ptX[1] > obj->getPosY()+1 - obj->getScale()/2 &&
+            ptX[1] < obj->getPosY()+1 + obj->getScale()/2 &&
+            ptX[2] > obj->getPosZ() - obj->getScale()/2 &&
+            ptX[2] < obj->getPosZ() + obj->getScale()/2)
+    {
+        cout << "*** Object selected X" << endl;
+        return true;
+    }
+
+    if(ptY[0] > obj->getPosX() - obj->getScale()/2 &&
+            ptY[0] < obj->getPosX() + obj->getScale()/2 &&
+            ptY[1] > obj->getPosY()+1 - obj->getScale()/2 &&
+            ptY[1] < obj->getPosY()+1 + obj->getScale()/2 &&
+            ptY[2] > obj->getPosZ() - obj->getScale()/2 &&
+            ptY[2] < obj->getPosZ() + obj->getScale()/2)
+    {
+        cout << "***** Object selected Y" << endl;
+        return true;
+    }
+
+    if(ptZ[0] > obj->getPosX() - obj->getScale()/2 &&
+            ptZ[0] < obj->getPosX() + obj->getScale()/2 &&
+            ptZ[1] > obj->getPosY()+1 - obj->getScale()/2 &&
+            ptZ[1] < obj->getPosY()+1 + obj->getScale()/2 &&
+            ptZ[2] > obj->getPosZ() - obj->getScale()/2 &&
+            ptZ[2] < obj->getPosZ() + obj->getScale()/2)
+    {
+        cout << "* Object selected Z" << endl;
+        return true;
+    }
+    return false;
 }
 
 
@@ -206,40 +231,44 @@ void special(int key, int x, int y)
     //translation of objects
     if (key == GLUT_KEY_LEFT && glutGetModifiers() == GLUT_ACTIVE_CTRL)
     {
-        if (selectedObject != 0 && selectedObject->getPosX() > -50)
+        if (selectedObject != 0)
         {
             selectedObject->setPosition(selectedObject->getPosX()-0.3,
-                                        selectedObject->getPosY(), selectedObject->getPosZ()); //translate object in -x direction
+                                        selectedObject->getPosY(),
+                                        selectedObject->getPosZ()); //translate object in -x direction
             selectedObject->setMinPointX(selectedObject->getMinPointX()-0.3);
             selectedObject->setMaxPointX(selectedObject->getMaxPointX()-0.3);
         }
     }
     else if (key == GLUT_KEY_RIGHT && glutGetModifiers() == GLUT_ACTIVE_CTRL)
     {
-        if (selectedObject != 0 && selectedObject->getPosX() < 50)
+        if (selectedObject != 0)
         {
             selectedObject->setPosition(selectedObject->getPosX()+0.3,
-                                        selectedObject->getPosY(), selectedObject->getPosZ()); //translate object in +x direction
+                                        selectedObject->getPosY(),
+                                        selectedObject->getPosZ()); //translate object in +x direction
             selectedObject->setMinPointX(selectedObject->getMinPointX()+0.3);
             selectedObject->setMaxPointX(selectedObject->getMaxPointX()+0.3);
         }
     }
     else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_CTRL)
     {
-        if (selectedObject != 0 && selectedObject->getPosZ() < 50)
+        if (selectedObject != 0)
         {
             selectedObject->setPosition(selectedObject->getPosX(),
-                                        selectedObject->getPosY(), selectedObject->getPosZ()+0.3); //translate object in +z direction
+                                        selectedObject->getPosY(),
+                                        selectedObject->getPosZ()+0.3); //translate object in +z direction
             selectedObject->setMinPointZ(selectedObject->getMinPointZ()+0.3);
             selectedObject->setMaxPointZ(selectedObject->getMaxPointZ()+0.3);
         }
     }
     else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_CTRL)
     {
-        if (selectedObject != 0 && selectedObject->getPosZ() > -50)
+        if (selectedObject != 0)
         {
             selectedObject->setPosition(selectedObject->getPosX(),
-                                        selectedObject->getPosY(), selectedObject->getPosZ()-0.3); //translate object in -z direction
+                                        selectedObject->getPosY(),
+                                        selectedObject->getPosZ()-0.3); //translate object in -z direction
             selectedObject->setMinPointZ(selectedObject->getMinPointZ()-0.3);
             selectedObject->setMaxPointZ(selectedObject->getMaxPointZ()-0.3);
         }
@@ -249,7 +278,8 @@ void special(int key, int x, int y)
         if (selectedObject != 0)
         {
             selectedObject->setPosition(selectedObject->getPosX(),
-                                        selectedObject->getPosY()+0.3, selectedObject->getPosZ()); //translate object in +y direction
+                                        selectedObject->getPosY()+0.3,
+                                        selectedObject->getPosZ()); //translate object in +y direction
             selectedObject->setMinPointY(selectedObject->getMinPointY()+0.3);
             selectedObject->setMaxPointY(selectedObject->getMaxPointY()+0.3);
         }
@@ -259,7 +289,8 @@ void special(int key, int x, int y)
         if (selectedObject != 0 && selectedObject->getPosY() > 0)
         {
             selectedObject->setPosition(selectedObject->getPosX(),
-                                        selectedObject->getPosY()-0.3, selectedObject->getPosZ()); //translate object in -y direction
+                                        selectedObject->getPosY()-0.3,
+                                        selectedObject->getPosZ()); //translate object in -y direction
             selectedObject->setMinPointY(selectedObject->getMinPointY()-0.3);
             selectedObject->setMaxPointY(selectedObject->getMaxPointY()-0.3);
         }
@@ -696,29 +727,29 @@ void display(void)
 
     glPushMatrix();
     glColor3f(0.5,0.5,0.5);
-    glTranslatef(-8,45,0);
+    glTranslatef(-15,45,0);
     glScalef(0.01,1,1);
     glutSolidCube(100);     //draws plane
     glPopMatrix();
 
     glPushMatrix();
     glColor3f(0.3,0.3,0.3);
-    glTranslatef(0,45,-8);
+    glTranslatef(0,45,-15);
     glScalef(1,1,0.01);
     glutSolidCube(100);     //draws plane
     glPopMatrix();
 
-    CalcIntersections();
-    glPushMatrix();
-        glTranslatef(teapot.posX, teapot.posY, teapot.posZ);
-
-        if(teapot.intersect)
-            glColor3f(1,0,0); //red
-        else
-            glColor3f(1, 1, 0); // yellow
-
-        glutSolidCube(1);
-    glPopMatrix();
+//    CalcIntersections();
+//    glPushMatrix();
+//    glTranslatef(teapot.posX, teapot.posY, teapot.posZ);
+//
+//    if(teapot.intersect)
+//        glColor3f(1,0,0); //red
+//    else
+//        glColor3f(1, 1, 0); // yellow
+//
+//    glutSolidCube(1);
+//    glPopMatrix();
 
     glColor3f(0.5,0.5,0.5);
     //draws all objects
@@ -761,7 +792,6 @@ void printInstructions()
     cout << "* KEYS 6 to 0 = creates a cube, sphere, octahedron, cone, torus respectively" << endl;
     cout << "* u = disables textures" << endl;
     cout << "* i, o, p = enables various textures" << endl << endl;
-
 }
 
 //save our mouse coords when they change
@@ -772,6 +802,13 @@ void mouse(int btn, int state, int x, int y)
         //handle camera movement
         mouseX = x;
         mouseY = WINDOW_SIZE_HEIGHT - y;
+        for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
+        {
+            if (CalcIntersections(*it))
+            {
+                selectedObject = *it;
+            }
+        }
     }
     glutPostRedisplay();
 }
@@ -788,7 +825,7 @@ int main(int argc, char** argv)
     glutInitWindowPosition(100, 100);
 
     glutCreateWindow("3GC3 Assignment 3");  //creates the window with game name
-    glutDisplayFunc(display);           //registers "display" as the display callback function
+    glutDisplayFunc(display);               //registers "display" as the display callback function
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(special);
     glutMouseFunc(mouse);
