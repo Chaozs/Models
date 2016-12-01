@@ -119,11 +119,10 @@ void setMaterial(int i)
 //    }
 //}
 
-//calculate whether an intersection of our ray hits the teapot
+//calculate whether an intersection of our ray hits the specified object
 bool CalcIntersections(Object* obj)
 {
-    //---Construct ray-----------------------------------------------------
-    //construct Ray
+    //======================= Construct ray =======================
     GLdouble R0[3], R1[3], Rd[3];
     GLdouble modelMat[16], projMat[16];
     GLint viewMat[4];
@@ -149,18 +148,15 @@ bool CalcIntersections(Object* obj)
     Rd[1] /= m;
     Rd[2] /= m;
 
-    //---calculate intersection point now-----------------------------------
-    //approx the teapot with a box of radius 1 centered around the teapot centered
-    //goes against the xy plane to test the Intersection
-    //NOTE: this is not the code from slides, but rather proof of concept
-    //using assumtions which are true for this example only.
+    //======================= calculate intersection point now =======================
+    //approx the object with a hitbox of radius objectScale/2 centered around the teapot centered
 
     //calculate t value for all three directions
     double tX = (((double)obj->getPosX()) - R0[0])/Rd[0];
     double tY = (((double)obj->getPosY()+1) - R0[1])/Rd[1];
     double tZ = (((double)obj->getPosZ()) - R0[2])/Rd[2];
 
-    //use t value to find x and y of our intersection point
+    //use t value to find x, y, and z of our intersection point
     double ptX[3];
     ptX[0] = obj->getPosX();
     ptX[1] = R0[1] + tX * Rd[1];
@@ -176,40 +172,34 @@ bool CalcIntersections(Object* obj)
     ptZ[1] = R0[1] + tZ * Rd[1];
     ptZ[2] = obj->getPosZ();
 
-    //now that we have our point on the xy plane at the level of the teapot,
-    //use it to see if this point is inside a box centered at the teapots
-    //location
+    //use it to see if this point is inside a box centered at the object location
+    if(ptX[0] > obj->getPosX() - obj->getScale()/2 &&
+            ptX[0] < obj->getPosX() + obj->getScale()/2 &&
+            ptX[1] > obj->getPosY() - obj->getScale()/2 &&
+            ptX[1] < obj->getPosY() + obj->getScale()/2 &&
+            ptX[2] > obj->getPosZ() - obj->getScale()/2 &&
+            ptX[2] < obj->getPosZ() + obj->getScale()/2)
+    {
+        return true;
+    }
 
-//    if(ptX[0] > obj->getPosX() - obj->getScale()/2 &&
-//            ptX[0] < obj->getPosX() + obj->getScale()/2 &&
-//            ptX[1] > obj->getPosY()+1 - obj->getScale()/2 &&
-//            ptX[1] < obj->getPosY()+1 + obj->getScale()/2 &&
-//            ptX[2] > obj->getPosZ() - obj->getScale()/2 &&
-//            ptX[2] < obj->getPosZ() + obj->getScale()/2)
-//    {
-//        cout << "*** Object selected X" << endl;
-//        return true;
-//    }
-
-//    if(ptY[0] > obj->getPosX() - obj->getScale()/2 &&
-//            ptY[0] < obj->getPosX() + obj->getScale()/2 &&
-//            ptY[1] > obj->getPosY()+1 - obj->getScale()/2 &&
-//            ptY[1] < obj->getPosY()+1 + obj->getScale()/2 &&
-//            ptY[2] > obj->getPosZ() - obj->getScale()/2 &&
-//            ptY[2] < obj->getPosZ() + obj->getScale()/2)
-//    {
-//        cout << "***** Object selected Y" << endl;
-//        return true;
-//    }
+    if(ptY[0] > obj->getPosX() - obj->getScale()/2 &&
+            ptY[0] < obj->getPosX() + obj->getScale()/2 &&
+            ptY[1] > obj->getPosY() - obj->getScale()/2 &&
+            ptY[1] < obj->getPosY() + obj->getScale()/2 &&
+            ptY[2] > obj->getPosZ() - obj->getScale()/2 &&
+            ptY[2] < obj->getPosZ() + obj->getScale()/2)
+    {
+        return true;
+    }
 
     if(ptZ[0] > obj->getPosX() - obj->getScale()/2 &&
             ptZ[0] < obj->getPosX() + obj->getScale()/2 &&
-            ptZ[1] > obj->getPosY()+1 - obj->getScale()/2 &&
-            ptZ[1] < obj->getPosY()+1 + obj->getScale()/2 &&
+            ptZ[1] > obj->getPosY() - obj->getScale()/2 &&
+            ptZ[1] < obj->getPosY() + obj->getScale()/2 &&
             ptZ[2] > obj->getPosZ() - obj->getScale()/2 &&
             ptZ[2] < obj->getPosZ() + obj->getScale()/2)
     {
-        cout << "* Object selected Z" << endl;
         return true;
     }
     return false;
@@ -282,8 +272,6 @@ void special(int key, int x, int y)
             selectedObject->setPosition(selectedObject->getPosX()-0.3,
                                         selectedObject->getPosY(),
                                         selectedObject->getPosZ()); //translate object in -x direction
-            selectedObject->setMinPointX(selectedObject->getMinPointX()-0.3);
-            selectedObject->setMaxPointX(selectedObject->getMaxPointX()-0.3);
         }
     }
     else if (key == GLUT_KEY_RIGHT && glutGetModifiers() == GLUT_ACTIVE_CTRL)
@@ -293,8 +281,6 @@ void special(int key, int x, int y)
             selectedObject->setPosition(selectedObject->getPosX()+0.3,
                                         selectedObject->getPosY(),
                                         selectedObject->getPosZ()); //translate object in +x direction
-            selectedObject->setMinPointX(selectedObject->getMinPointX()+0.3);
-            selectedObject->setMaxPointX(selectedObject->getMaxPointX()+0.3);
         }
     }
     else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_CTRL)
@@ -304,8 +290,6 @@ void special(int key, int x, int y)
             selectedObject->setPosition(selectedObject->getPosX(),
                                         selectedObject->getPosY(),
                                         selectedObject->getPosZ()+0.3); //translate object in +z direction
-            selectedObject->setMinPointZ(selectedObject->getMinPointZ()+0.3);
-            selectedObject->setMaxPointZ(selectedObject->getMaxPointZ()+0.3);
         }
     }
     else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_CTRL)
@@ -315,8 +299,6 @@ void special(int key, int x, int y)
             selectedObject->setPosition(selectedObject->getPosX(),
                                         selectedObject->getPosY(),
                                         selectedObject->getPosZ()-0.3); //translate object in -z direction
-            selectedObject->setMinPointZ(selectedObject->getMinPointZ()-0.3);
-            selectedObject->setMaxPointZ(selectedObject->getMaxPointZ()-0.3);
         }
     }
     else if (key == GLUT_KEY_PAGE_UP && glutGetModifiers() == GLUT_ACTIVE_CTRL)
@@ -326,8 +308,6 @@ void special(int key, int x, int y)
             selectedObject->setPosition(selectedObject->getPosX(),
                                         selectedObject->getPosY()+0.3,
                                         selectedObject->getPosZ()); //translate object in +y direction
-            selectedObject->setMinPointY(selectedObject->getMinPointY()+0.3);
-            selectedObject->setMaxPointY(selectedObject->getMaxPointY()+0.3);
         }
     }
     else if (key == GLUT_KEY_PAGE_DOWN && glutGetModifiers() == GLUT_ACTIVE_CTRL)
@@ -337,8 +317,6 @@ void special(int key, int x, int y)
             selectedObject->setPosition(selectedObject->getPosX(),
                                         selectedObject->getPosY()-0.3,
                                         selectedObject->getPosZ()); //translate object in -y direction
-            selectedObject->setMinPointY(selectedObject->getMinPointY()-0.3);
-            selectedObject->setMaxPointY(selectedObject->getMaxPointY()-0.3);
         }
     }
 
@@ -347,28 +325,14 @@ void special(int key, int x, int y)
     {
         if (selectedObject != 0 && selectedObject->getScale() < 50)
         {
-            float pointScaleChange = 0.05;
             selectedObject->setScale(selectedObject->getScale()+0.1);   //upscale object
-            selectedObject->setMinPointX(selectedObject->getMinPointX()-pointScaleChange);
-            selectedObject->setMinPointY(selectedObject->getMinPointY()-pointScaleChange);
-            selectedObject->setMinPointZ(selectedObject->getMinPointZ()-pointScaleChange);
-            selectedObject->setMaxPointX(selectedObject->getMaxPointX()+pointScaleChange);
-            selectedObject->setMaxPointY(selectedObject->getMaxPointY()+pointScaleChange);
-            selectedObject->setMaxPointZ(selectedObject->getMaxPointZ()+pointScaleChange);
         }
     }
     else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_SHIFT)
     {
         if (selectedObject != 0 && selectedObject->getScale() > 0.01)
         {
-            float pointScaleChange = 0.05;
             selectedObject->setScale(selectedObject->getScale()-0.1);   //downscale object
-            selectedObject->setMinPointX(selectedObject->getMinPointX()+pointScaleChange);
-            selectedObject->setMinPointY(selectedObject->getMinPointY()+pointScaleChange);
-            selectedObject->setMinPointZ(selectedObject->getMinPointZ()+pointScaleChange);
-            selectedObject->setMaxPointX(selectedObject->getMaxPointX()-pointScaleChange);
-            selectedObject->setMaxPointY(selectedObject->getMaxPointY()-pointScaleChange);
-            selectedObject->setMaxPointZ(selectedObject->getMaxPointZ()-pointScaleChange);
         }
     }
 

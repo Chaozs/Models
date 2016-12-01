@@ -30,8 +30,8 @@ class Object
 public:
     enum ObjectType {Cube, Sphere, Octahedron, Cone, Torus, House};
     Object();   //constructor
-    void setPosition(float,float,float);
-    void setOrientation(float,float,float);
+    void setPosition(float, float, float);
+    void setOrientation(float, float, float);
     void setScale(float);
     void storeMaterial(int);
     float getPosX();
@@ -45,20 +45,6 @@ public:
     void drawObject(bool);
     void setType(ObjectType);
     int getType();
-    bool getIntersection();
-    void setIntersection(bool);
-    void setMinPointX(float);
-    void setMinPointY(float);
-    void setMinPointZ(float);
-    void setMaxPointX(float);
-    void setMaxPointY(float);
-    void setMaxPointZ(float);
-    float getMinPointX();
-    float getMinPointY();
-    float getMinPointZ();
-    float getMaxPointX();
-    float getMaxPointY();
-    float getMaxPointZ();
     void drawHouse();
 
 private:
@@ -68,8 +54,6 @@ private:
     bool intersect;
     float objectScale;
     ObjectType type;
-    float minPoint[3];
-    float maxPoint[3];
     void buildNormal(float, float, float, int);
     float normVec[9][3]; //normal vector for each x,z
 };
