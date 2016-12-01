@@ -26,16 +26,13 @@ Thien Trandinh / trandit / 001420634
 #include "Object.h"
 #include "MaterialStruct.h"
 #include "SaveLoadStates.h"
-#define BOUND_OFFSET 0.55
 
-float eye[] = {0, 4, 2};                    //initial camera location
-float lookAt[] {0,0,0};                     //point camera is looking at
+float camPos[] = {10, 10, 10};	            //initial camera location
+float camUp[] = {0, 1, 0};                  //up vector of the camera
+float camTarget[] = {0, 0, 0};	            //point camera is looking at
+float camSpeed = 0.1f;
 float light0Pos[] = {-5, 3, 0, 1};          //initial light0 position
 float light1Pos[] = {5, 3, 0, 1};           //initial light1 positon
-float xAxisRotation = 0;                    //rotation around x axis
-float yAxisRotation = 0;                    //rotation around y axis
-int sceneSize = 100;                        //total size of the scene
-float scaleFactor = 0.5/(sceneSize/50);     //scales scene to fit the screen
 int materialCounter = 1;                    //default material is brass
 list<Object*> objectList;                   //list of object addresses
 Object* selectedObject;                     //pointer to currently selected object
@@ -231,7 +228,8 @@ void special(int key, int x, int y)
         if (selectedObject != 0)
         {
             selectedObject->setOrientation(selectedObject->getOrientationX()-2,
-                                           selectedObject->getOrientationY(), selectedObject->getOrientationZ());  //rotate in -x axis
+                                           selectedObject->getOrientationY(),
+                                           selectedObject->getOrientationZ());  //rotate in -x axis
         }
     }
     else if (key == GLUT_KEY_RIGHT && glutGetModifiers() == GLUT_ACTIVE_ALT)
@@ -239,7 +237,8 @@ void special(int key, int x, int y)
         if (selectedObject != 0)
         {
             selectedObject->setOrientation(selectedObject->getOrientationX()+2,
-                                           selectedObject->getOrientationY(), selectedObject->getOrientationZ());  //rotate in +x axis
+                                           selectedObject->getOrientationY(),
+                                           selectedObject->getOrientationZ());  //rotate in +x axis
         }
     }
     else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_ALT)
@@ -247,7 +246,8 @@ void special(int key, int x, int y)
         if (selectedObject != 0)
         {
             selectedObject->setOrientation(selectedObject->getOrientationX(),
-                                           selectedObject->getOrientationY(), selectedObject->getOrientationZ()+2);  //rotate in +z axis
+                                           selectedObject->getOrientationY(),
+                                           selectedObject->getOrientationZ()+2);  //rotate in +z axis
         }
     }
     else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_ALT)
@@ -255,7 +255,8 @@ void special(int key, int x, int y)
         if (selectedObject != 0)
         {
             selectedObject->setOrientation(selectedObject->getOrientationX(),
-                                           selectedObject->getOrientationY(), selectedObject->getOrientationZ()-2);  //rotate in -z axis
+                                           selectedObject->getOrientationY(),
+                                           selectedObject->getOrientationZ()-2);  //rotate in -z axis
         }
     }
     else if (key == GLUT_KEY_PAGE_UP && glutGetModifiers() == GLUT_ACTIVE_ALT)
@@ -263,7 +264,8 @@ void special(int key, int x, int y)
         if (selectedObject != 0)
         {
             selectedObject->setOrientation(selectedObject->getOrientationX(),
-                                           selectedObject->getOrientationY()+2, selectedObject->getOrientationZ());  //rotate in +y axis
+                                           selectedObject->getOrientationY()+2,
+                                           selectedObject->getOrientationZ());  //rotate in +y axis
         }
     }
     else if (key == GLUT_KEY_PAGE_DOWN && glutGetModifiers() == GLUT_ACTIVE_ALT)
@@ -271,26 +273,29 @@ void special(int key, int x, int y)
         if (selectedObject != 0)
         {
             selectedObject->setOrientation(selectedObject->getOrientationX(),
-                                           selectedObject->getOrientationY()-2, selectedObject->getOrientationZ());  //rotate in -y axis
+                                           selectedObject->getOrientationY()-2,
+                                           selectedObject->getOrientationZ());  //rotate in -y axis
         }
     }
 
     //camera control
-    else if (key == GLUT_KEY_LEFT && yAxisRotation > -90)
+    else if (key == GLUT_KEY_LEFT)
     {
-        yAxisRotation--;        //rotate y-axis in negative direction
+        camPos[0] = camPos[0]*cos(0.03)-camPos[2]*sin(0.03);    //rotate around y-axis in positive direction
+        camPos[2] = camPos[0]*sin(0.03)+camPos[2]*cos(0.03);
     }
-    else if (key == GLUT_KEY_RIGHT && yAxisRotation < 0)
+    else if (key == GLUT_KEY_RIGHT)
     {
-        yAxisRotation++;        //rotate y-axis in positive direction
+        camPos[0] = camPos[0]*cos(-0.03)-camPos[2]*sin(-0.03);  //rotate around y-axis in negative direction
+        camPos[2] = camPos[0]*sin(-0.03)+camPos[2]*cos(-0.03);
     }
-    else if (key == GLUT_KEY_UP && xAxisRotation < 45)
+    else if (key == GLUT_KEY_UP)
     {
-        xAxisRotation++;        //rotate x-axis in positive direction
+        camPos[0] += camSpeed;      //rotate x-axis in positive direction
     }
-    else if (key == GLUT_KEY_DOWN && xAxisRotation > -60)
+    else if (key == GLUT_KEY_DOWN)
     {
-        xAxisRotation--;        //rotate x-axis in negative direction
+        camPos[0] -= camSpeed;      //rotate x-axis in negative direction
     }
     glutPostRedisplay();
 }
@@ -428,8 +433,8 @@ void keyboard(unsigned char key, int x, int y)
         img_data = LoadPPM("interface.ppm", &width, &height, &k);
         glEnable(GL_TEXTURE_2D);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img_data);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+//        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         break;
@@ -498,7 +503,6 @@ void keyboard(unsigned char key, int x, int y)
         objectList.push_back(selectedObject);
         break;
     }
-
     break;
     }
     glutPostRedisplay();
@@ -604,14 +608,8 @@ void display(void)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    //set initial camera position and direction
-    gluLookAt(eye[0], eye[1], eye[2], lookAt[0], lookAt[1], lookAt[2], 0,1,0);
-
-    //handle camera movement
-    glPushMatrix();
-    glScalef(scaleFactor, scaleFactor, scaleFactor);
-    glRotatef(xAxisRotation, 1, 0, 0);
-    glRotatef(yAxisRotation, 0, 1, 0);
+    //set camera position and direction
+    gluLookAt(camPos[0], camPos[1], camPos[2], camTarget[0], camTarget[1], camTarget[2], camUp[0], camUp[1], camUp[2]);
 
     addLights();
 
@@ -620,21 +618,21 @@ void display(void)
     glColor3f(0.7,0.7,0.7);
     glTranslatef(0,-1,0);
     glScalef(1,0.01,1);
-    glutSolidCube(100); //draws plane
+    glutSolidCube(100);     //draws plane
     glPopMatrix();
 
     glPushMatrix();
     glColor3f(0.5,0.5,0.5);
     glTranslatef(-8,45,0);
     glScalef(0.01,1,1);
-    glutSolidCube(100); //draws plane
+    glutSolidCube(100);     //draws plane
     glPopMatrix();
 
     glPushMatrix();
     glColor3f(0.3,0.3,0.3);
     glTranslatef(0,45,-8);
     glScalef(1,1,0.01);
-    glutSolidCube(100); //draws plane
+    glutSolidCube(100);     //draws plane
     glPopMatrix();
 
     glColor3f(0.5,0.5,0.5);
@@ -652,8 +650,6 @@ void display(void)
     glDisable(GL_TEXTURE_GEN_S); //disable texture coordinate generation
     glDisable(GL_TEXTURE_GEN_T);
     glFrontFace(GL_CW);
-
-    glPopMatrix();
 
     glutSwapBuffers();
 }
