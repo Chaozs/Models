@@ -66,6 +66,7 @@ private:
     void drawHouseWireFrame();
     void initializeNormals();
     void bindTextures();
+    void unbindTextures();
     ObjectType type;
 };
 

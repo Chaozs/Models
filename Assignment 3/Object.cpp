@@ -338,19 +338,19 @@ void Object::drawObject(bool isSelected)
     case Cube:
         //bindTextures();
         glutSolidCube(objectScale);             //draws unit length cube
-        glBindTexture(GL_TEXTURE_2D, 0);
+        unbindTextures();
         break;
     case Sphere:
         bindTextures();
         glutSolidSphere(objectScale/2, 16, 16);   //draws unit length sphere
-        glBindTexture(GL_TEXTURE_2D, 0);
+        unbindTextures();
         break;
     case Octahedron:
         glPushMatrix();
         glScalef(objectScale/2, objectScale/2, objectScale/2);
         bindTextures();
         glutSolidOctahedron();                  //draws unit length octahedron
-        glBindTexture(GL_TEXTURE_2D, 0);
+        unbindTextures();
         glPopMatrix();
         break;
     case Cone:
@@ -358,7 +358,7 @@ void Object::drawObject(bool isSelected)
         glTranslatef(0, 0, -objectScale/2);
         bindTextures();
         glutSolidCone(objectScale/2, objectScale, 16, 16);    //draws unit length cone
-        glBindTexture(GL_TEXTURE_2D, 0);
+        unbindTextures();
         glPopMatrix();
         break;
     case Torus:
@@ -366,7 +366,7 @@ void Object::drawObject(bool isSelected)
         glScalef(1, 1, 3);
         bindTextures();
         glutSolidTorus(objectScale/3-objectScale/6, objectScale/3, 16, 16);     //draws unit length torus
-        glBindTexture(GL_TEXTURE_2D, 0);
+        unbindTextures();
         glPopMatrix();
         break;
     case House:
@@ -374,7 +374,7 @@ void Object::drawObject(bool isSelected)
         glScalef(objectScale/2, objectScale/2, objectScale/2);
         bindTextures();
         drawHouse();
-        glBindTexture(GL_TEXTURE_2D, 0);
+        unbindTextures();
         glPopMatrix();
         break;
     }
@@ -439,6 +439,8 @@ void Object::bindTextures()
 {
     if (texture != 0)
     {
+        glEnable(GL_TEXTURE_GEN_S);     //enable texture coordinate generation
+        glEnable(GL_TEXTURE_GEN_T);
         switch(texture)
         {
         case 1:
@@ -452,4 +454,11 @@ void Object::bindTextures()
             break;
         }
     }
+}
+
+void Object::unbindTextures()
+{
+    glDisable(GL_TEXTURE_GEN_S);    //enable texture coordinate generation
+    glDisable(GL_TEXTURE_GEN_T);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
