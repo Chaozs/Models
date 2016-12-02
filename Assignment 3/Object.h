@@ -50,7 +50,7 @@ public:
 private:
     float position[3];
     float orientation[3];
-    float normVec[9][3] = {{0,1,0}, {1,0,0}, {0,0,-1}, {0,0,1}, {1,0,0}, {-1,1,0}, {0,1,1}, {1,1,0}, {0,1,-1} }; 
+    float normVec[9][3] = {{0,1,0}, {-1,0,0}, {0,0,-1}, {0,0,1}, {1,0,0}, {-1,1,0}, {0,1,1}, {1,1,0}, {0,1,-1} }; 
     int material;
     bool intersect;
     float objectScale;

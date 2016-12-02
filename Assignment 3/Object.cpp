@@ -30,10 +30,6 @@ void Object::drawHouse()
 {
     glBegin(GL_TRIANGLES);
 
-    normVec[0][0] = 0;
-    normVec[1][0] = 4;
-    normVec[2][0] = 0;
-
     //bottom
     glNormal3fv(normVec[0]);
 
@@ -49,12 +45,12 @@ void Object::drawHouse()
     glNormal3fv(normVec[1]);
 
     glVertex3f(-1,-1,1);
-    glVertex3f(-1,0,1);
-    glVertex3f(-1,0,-1);
-
-    glVertex3f(-1,-1,1);
     glVertex3f(-1,0,-1);
     glVertex3f(-1,-1,-1);
+
+    glVertex3f(-1,-1,1);
+    glVertex3f(-1,0,1);
+    glVertex3f(-1,0,-1);
 
     //front left
     glNormal3fv(normVec[2]);
