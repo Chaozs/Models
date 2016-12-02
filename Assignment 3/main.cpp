@@ -387,11 +387,15 @@ void special(int key, int x, int y)
     {
         //rotate x-axis in positive direction
         camPos[0] += camSpeed;
+        camPos[1] += camSpeed;
+        camPos[2] += camSpeed;
     }
     else if (key == GLUT_KEY_DOWN)
     {
         //rotate x-axis in negative direction
         camPos[0] -= camSpeed;
+        camPos[1] -= camSpeed;
+        camPos[2] -= camSpeed;
     }
     glutPostRedisplay();
 }
@@ -766,20 +770,6 @@ void display(void)
     glTranslatef(0,-1,0);
     glScalef(1,0.01,1);
     glutSolidCube(100);     //draws plane (floor)
-    glPopMatrix();
-
-    glPushMatrix();
-    glColor3f(0.5,0.5,0.5);
-    glTranslatef(-15,45,0);
-    glScalef(0.01,1,1);
-    glutSolidCube(100);     //draws plane (wall 1)
-    glPopMatrix();
-
-    glPushMatrix();
-    glColor3f(0.3,0.3,0.3);
-    glTranslatef(0,45,-15);
-    glScalef(1,1,0.01);
-    glutSolidCube(100);     //draws plane (wall 2)
     glPopMatrix();
 
     //draws all objects
