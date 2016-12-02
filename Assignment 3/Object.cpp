@@ -110,7 +110,94 @@ void Object::drawHouse()
     glVertex3f(0,1,0);
 
     glEnd();
+}
 
+//draws custom house object wireframe
+void Object::drawHouseWireFrame()
+{
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(-1,-1,-1);
+    glVertex3f(-1,-1,1);
+    glVertex3f(1,-1,1);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(-1,-1,-1);
+    glVertex3f(1,-1,1);
+    glVertex3f(1,-1,-1);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(-1,-1,1);
+    glVertex3f(-1,0,-1);
+    glVertex3f(-1,-1,-1);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(-1,-1,1);
+    glVertex3f(-1,0,1);
+    glVertex3f(-1,0,-1);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(1,-1,-1);
+    glVertex3f(-1,-1,-1);
+    glVertex3f(-1,0,-1);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(1,-1,-1);
+    glVertex3f(-1,0,-1);
+    glVertex3f(1,0,-1);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(1,-1,1);
+    glVertex3f(1,0,1);
+    glVertex3f(-1,0,1);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(1,-1,1);
+    glVertex3f(-1,0,1);
+    glVertex3f(-1,-1,1);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(1,-1,-1);
+    glVertex3f(1,0,-1);
+    glVertex3f(1,-1,1);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(1,-1,1);
+    glVertex3f(1,0,-1);
+    glVertex3f(1,0,1);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(-1,0,-1);
+    glVertex3f(-1,0,1);
+    glVertex3f(0,1,0);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(-1,0,1);
+    glVertex3f(1,0,1);
+    glVertex3f(0,1,0);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(1,0,1);
+    glVertex3f(1,0,-1);
+    glVertex3f(0,1,0);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(1,0,-1);
+    glVertex3f(-1,0,-1);
+    glVertex3f(0,1,0);
+    glEnd();
 }
 
 void Object::setType(ObjectType t)
@@ -325,7 +412,7 @@ void Object::drawObject(bool isSelected)
         case House:
             glPushMatrix();
             glScalef(objectScale/2, objectScale/2, objectScale/2);
-            drawHouse();
+            drawHouseWireFrame();
             glPopMatrix();
             break;
         }

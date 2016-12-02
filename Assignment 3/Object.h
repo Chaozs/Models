@@ -47,7 +47,6 @@ public:
     void drawObject(bool);
     int getType();
     void setType(ObjectType);
-    void drawHouse();
     void setTexture1(GLuint*);
     void setTexture2(GLuint*);
     void setTexture3(GLuint*);
@@ -63,6 +62,8 @@ private:
     GLuint *myTex1;
     GLuint *myTex2;
     GLuint *myTex3;
+    void drawHouse();
+    void drawHouseWireFrame();
     void initializeNormals();
     void bindTextures();
     ObjectType type;

@@ -680,7 +680,7 @@ void init(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     /*Get and save image*/
-    image2 = LoadPPM("interface.ppm", &width, &height, &k);
+    image2 = LoadPPM("marble.ppm", &width, &height, &k);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
                  GL_UNSIGNED_BYTE, image2);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -692,7 +692,7 @@ void init(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
     /*Get and save image*/
-    image3 = LoadPPM("interface.ppm", &width, &height, &k);
+    image3 = LoadPPM("snail_a.ppm", &width, &height, &k);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
                  GL_UNSIGNED_BYTE, image3);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -807,7 +807,7 @@ void printInstructions()
     cout << "* m = applies current drawing material to selected object" << endl;
     cout << "* KEYS 6 to 0 = creates a cube, sphere, octahedron, cone, torus respectively" << endl;
     cout << "* u = disables textures" << endl;
-    cout << "* i, o, p = enables various textures" << endl << endl;
+    cout << "* i, o, p = enables various textures; where i=interface, o=marble, p=snail" << endl << endl;
 }
 
 //save our mouse coords when they change
