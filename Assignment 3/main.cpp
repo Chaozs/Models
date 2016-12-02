@@ -28,14 +28,14 @@ Thien Trandinh / trandit / 001420634
 #define BOUND_OFFSET 0.55
 
 /* CAMERA */
-float camPos[] = {10, 10, 10};	            //initial camera location
+float camPos[] = {10, 20, 0};	            //initial camera location
 float camUp[] = {0, 1, 0};                  //up vector of the camera
 float camTarget[] = {0, 0, 0};	            //point camera is looking at
 float camSpeed = 0.1f;
 
 /* LIGHTING */
-float light0Pos[] = {-5, 3, 0, 1};          //initial light0 position
-float light1Pos[] = {5, 3, 0, 1};           //initial light1 positon
+float light0Pos[] = {0, 3, -5, 1};          //initial light0 position
+float light1Pos[] = {0, 3, 5, 1};           //initial light1 positon
 
 /* MATERIAL */
 int materialCounter = 1;                    //default material is brass
@@ -383,12 +383,11 @@ void special(int key, int x, int y)
         camPos[0] = camPos[0]*cos(-0.03)-camPos[2]*sin(-0.03);
         camPos[2] = camPos[0]*sin(-0.03)+camPos[2]*cos(-0.03);
     }
-    else if (key == GLUT_KEY_UP && camPos[0] > 0)
+    else if (key == GLUT_KEY_UP && camPos[0]*cos(0.03)-camPos[1]*sin(0.03) > 0)
     {
         //rotate z-axis in positive direction
         camPos[0] = camPos[0]*cos(0.03)-camPos[1]*sin(0.03);
         camPos[1] = camPos[0]*sin(0.03)+camPos[1]*cos(0.03);
-        cout << camPos[0] << " | " << camPos[1] << endl;
     }
     else if (key == GLUT_KEY_DOWN && camPos[1] > 0)
     {
