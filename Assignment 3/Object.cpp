@@ -336,7 +336,7 @@ void Object::drawObject(bool isSelected)
     switch(type)
     {
     case Cube:
-        //bindTextures();
+        bindTextures();
         glutSolidCube(objectScale);             //draws unit length cube
         unbindTextures();
         break;
