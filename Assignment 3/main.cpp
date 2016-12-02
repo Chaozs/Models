@@ -383,19 +383,18 @@ void special(int key, int x, int y)
         camPos[0] = camPos[0]*cos(-0.03)-camPos[2]*sin(-0.03);
         camPos[2] = camPos[0]*sin(-0.03)+camPos[2]*cos(-0.03);
     }
-    else if (key == GLUT_KEY_UP)
+    else if (key == GLUT_KEY_UP && camPos[0] > 0)
     {
-        //rotate x-axis in positive direction
-        camPos[0] += camSpeed;
-        camPos[1] += camSpeed;
-        camPos[2] += camSpeed;
+        //rotate z-axis in positive direction
+        camPos[0] = camPos[0]*cos(0.03)-camPos[1]*sin(0.03);
+        camPos[1] = camPos[0]*sin(0.03)+camPos[1]*cos(0.03);
+        cout << camPos[0] << " | " << camPos[1] << endl;
     }
-    else if (key == GLUT_KEY_DOWN)
+    else if (key == GLUT_KEY_DOWN && camPos[1] > 0)
     {
-        //rotate x-axis in negative direction
-        camPos[0] -= camSpeed;
-        camPos[1] -= camSpeed;
-        camPos[2] -= camSpeed;
+        //rotate z-axis in negative direction
+        camPos[0] = camPos[0]*cos(-0.03)-camPos[1]*sin(-0.03);
+        camPos[1] = camPos[0]*sin(-0.03)+camPos[1]*cos(-0.03);
     }
     glutPostRedisplay();
 }
@@ -649,7 +648,7 @@ void keyboard(unsigned char key, int x, int y)
 //initialize
 void init(void)
 {
-    glClearColor(0.3, 0.3, 0.3, 0);
+    glClearColor(0, 0, 0, 0);
 
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_LIGHTING);
@@ -661,7 +660,6 @@ void init(void)
     gluPerspective(45, 1, 1, 1000);
 
     glEnable(GL_DEPTH_TEST);    //enables z buffer
-    glClearColor(1, 1, 1, 0);   //set clear colour to white
 
     //set material
     setMaterial(0);
