@@ -23,9 +23,12 @@ Object::Object()
     //sets initial scale to unit size
     objectScale = 1;
 }
-void Object::initializeNormals(){
+void Object::initializeNormals()
+{
 
 }
+
+//draws custom house object
 void Object::drawHouse()
 {
     glBegin(GL_TRIANGLES);
@@ -85,9 +88,8 @@ void Object::drawHouse()
     glVertex3f(1,0,-1);
     glVertex3f(1,0,1);
 
-
-
     glNormal3fv(normVec[5]);
+
     glVertex3f(-1,0,-1);
     glVertex3f(-1,0,1);
     glVertex3f(0,1,0);
@@ -132,6 +134,18 @@ int Object::getMaterial()
     return material;
 }
 
+//stores texture index
+void Object::setTexture(int t)
+{
+    texture = t;
+}
+
+//return texture index
+int Object::getTexture()
+{
+    return texture;
+}
+
 //return the objectType as an int, where 0=cube, 1=sphere, 2=octahedron, 3=cone, 4=torus
 int Object::getType()
 {
@@ -159,6 +173,7 @@ int Object::getType()
     return -1;
 }
 
+//sets position of object
 void Object::setPosition(float x, float y, float z)
 {
     position[0] = x;
@@ -166,6 +181,7 @@ void Object::setPosition(float x, float y, float z)
     position[2] = z;
 }
 
+//sets orientation of object
 void Object::setOrientation(float x, float y, float z)
 {
     orientation[0] = x;
@@ -173,46 +189,55 @@ void Object::setOrientation(float x, float y, float z)
     orientation[2] = z;
 }
 
+//gets X position of object
 float Object::getPosX()
 {
     return position[0];
 }
 
+//gets Y position of object
 float Object::getPosY()
 {
     return position[1];
 }
 
+//get Z position of object
 float Object::getPosZ()
 {
     return position[2];
 }
 
+//gets X orientation of object
 float Object::getOrientationX()
 {
     return orientation[0];
 }
 
+//gets Y orientation of object
 float Object::getOrientationY()
 {
     return orientation[1];
 }
 
+//gets Z orientation of object
 float Object::getOrientationZ()
 {
     return orientation[2];
 }
 
+//gets scale of object
 float Object::getScale()
 {
     return objectScale;
 }
 
+//sets scale of object
 void Object::setScale(float scale)
 {
     objectScale = scale;
 }
 
+//draws the object
 void Object::drawObject(bool isSelected)
 {
     glPushMatrix();
@@ -224,33 +249,45 @@ void Object::drawObject(bool isSelected)
     switch(type)
     {
     case Cube:
+        //bindTextures();
         glutSolidCube(objectScale);             //draws unit length cube
+        glBindTexture(GL_TEXTURE_2D, 0);
         break;
     case Sphere:
+        bindTextures();
         glutSolidSphere(objectScale/2, 16, 16);   //draws unit length sphere
+        glBindTexture(GL_TEXTURE_2D, 0);
         break;
     case Octahedron:
         glPushMatrix();
         glScalef(objectScale/2, objectScale/2, objectScale/2);
+        bindTextures();
         glutSolidOctahedron();                  //draws unit length octahedron
+        glBindTexture(GL_TEXTURE_2D, 0);
         glPopMatrix();
         break;
     case Cone:
         glPushMatrix();
         glTranslatef(0, 0, -objectScale/2);
+        bindTextures();
         glutSolidCone(objectScale/2, objectScale, 16, 16);    //draws unit length cone
+        glBindTexture(GL_TEXTURE_2D, 0);
         glPopMatrix();
         break;
     case Torus:
         glPushMatrix();
         glScalef(1, 1, 3);
+        bindTextures();
         glutSolidTorus(objectScale/3-objectScale/6, objectScale/3, 16, 16);     //draws unit length torus
+        glBindTexture(GL_TEXTURE_2D, 0);
         glPopMatrix();
         break;
     case House:
         glPushMatrix();
         glScalef(objectScale/2, objectScale/2, objectScale/2);
+        bindTextures();
         drawHouse();
+        glBindTexture(GL_TEXTURE_2D, 0);
         glPopMatrix();
         break;
     }
@@ -258,7 +295,7 @@ void Object::drawObject(bool isSelected)
     //draws wireframe for selected object
     if (isSelected)
     {
-        glColor3f(0, 0, 1);
+        glColor3f(1, 0, 0);
         switch(type)
         {
         case Cube:
@@ -294,4 +331,38 @@ void Object::drawObject(bool isSelected)
         }
     }
     glPopMatrix();
+}
+
+void Object::setTexture1(GLuint* texture1)
+{
+    myTex1 = texture1;
+}
+
+void Object::setTexture2(GLuint* texture2)
+{
+    myTex2 = texture2;
+}
+
+void Object::setTexture3(GLuint* texture3)
+{
+    myTex3 = texture3;
+}
+
+void Object::bindTextures()
+{
+    if (texture != 0)
+    {
+        switch(texture)
+        {
+        case 1:
+            glBindTexture(GL_TEXTURE_2D, *myTex1);
+            break;
+        case 2:
+            glBindTexture(GL_TEXTURE_2D, *myTex2);
+            break;
+        case 3:
+            glBindTexture(GL_TEXTURE_2D, *myTex3);
+            break;
+        }
+    }
 }

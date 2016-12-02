@@ -8,7 +8,6 @@ Thien Trandinh / trandit / 001420634
 #include <stdio.h>
 #include <stdlib.h>
 #include <list>
-#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -28,23 +27,34 @@ Thien Trandinh / trandit / 001420634
 #include "SaveLoadStates.h"
 #define BOUND_OFFSET 0.55
 
+/* CAMERA */
 float camPos[] = {10, 10, 10};	            //initial camera location
 float camUp[] = {0, 1, 0};                  //up vector of the camera
 float camTarget[] = {0, 0, 0};	            //point camera is looking at
 float camSpeed = 0.1f;
+
+/* LIGHTING */
 float light0Pos[] = {-5, 3, 0, 1};          //initial light0 position
 float light1Pos[] = {5, 3, 0, 1};           //initial light1 positon
+
+/* MATERIAL */
 int materialCounter = 1;                    //default material is brass
+
+/* OBJECTS */
 list<Object*> objectList;                   //list of object addresses
 Object* selectedObject;                     //pointer to currently selected object
+
+/* WINDOW */
 int WINDOW_SIZE_HEIGHT = 800;
 int WINDOW_SIZE_WIDTH = 800;
 int mouseX = 0, mouseY = 0;                 //global vars to save mouse x/y coord
 
-//*********************Texture***************
+/* TEXTURE */
 int height, width, k;
-GLubyte* img_data;
-//*********************Texture***************
+GLubyte* image;
+GLubyte* image2;
+GLubyte* image3;
+GLuint myTex[3];
 
 void setMaterial(int i)
 {
@@ -73,56 +83,10 @@ void setMaterial(int i)
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, current.shininess);
 }
 
-////calculates whether an intersection of ray and sphere occurs; assume obj is a sphere
-//bool sphereIntersection(Object* obj)
-//{
-//    //---Construct ray-----------------------------------------------------
-//    //construct Ray
-//    GLdouble R0[3], R1[3], Rd[3];
-//    GLdouble modelMat[16], projMat[16];
-//    GLint viewMat[4];
-//
-//    //populate mpv matricies
-//    glGetDoublev(GL_MODELVIEW_MATRIX, modelMat);
-//    glGetDoublev(GL_PROJECTION_MATRIX, projMat);
-//    glGetIntegerv(GL_VIEWPORT, viewMat);
-//
-//    //calculate near point
-//    gluUnProject(mouseX, mouseY, 0.0, modelMat, projMat, viewMat, &R0[0], &R0[1], &R0[2]);
-//    //calculate far point
-//    gluUnProject(mouseX, mouseY, 1.0, modelMat, projMat, viewMat, &R1[0], &R1[1], &R1[2]);
-//
-//    //calculate our ray from R0 and R1
-//    Rd[0] = R1[0] - R0[0];
-//    Rd[1] = R1[1] - R0[1];
-//    Rd[2] = R1[2] - R0[2];
-//
-//    //turn ray Rd into unit ray
-//    GLdouble m = sqrt(Rd[0]*Rd[0] + Rd[1]*Rd[1] + Rd[2]*Rd[2]);
-//    Rd[0] /= m;
-//    Rd[1] /= m;
-//    Rd[2] /= m;
-//
-//    float vpc[3];   //vector from origin ray point and centre of sphere
-//    vpc[0] = obj->getPosX() - (float) R0[0];
-//    vpc[1] = obj->getPosY() - (float) R0[1];
-//    vpc[2] = obj->getPosZ() - (float) R0[2];
-//    float vpcMagnitude = sqrt(vpc[0]*vpc[0] + vpc[1]*vpc[1] + vpc[2]*vpc[2]);
-//
-//    if (vpc[0] < Rd[0] && vpc[1] < Rd[1] && vpc[2] < Rd[2]) //when sphere is behind origin of ray
-//    {
-//        if (vpcMagnitude > obj->getScale()/2)
-//        {
-//            return false;
-//        }
-//        else if (vpcMagnitude == obj->getScale()/2)
-//    }
-//}
-
 //calculate whether an intersection of our ray hits the specified object
-bool CalcIntersections(Object* obj)
+bool isClicked(Object* obj)
 {
-    //======================= Construct ray =======================
+    /* CONSTRUCT RAY */
     GLdouble R0[3], R1[3], Rd[3];
     GLdouble modelMat[16], projMat[16];
     GLint viewMat[4];
@@ -148,7 +112,7 @@ bool CalcIntersections(Object* obj)
     Rd[1] /= m;
     Rd[2] /= m;
 
-    //======================= calculate intersection point now =======================
+    /* INTERSECTION POINT */
     //approx the object with a hitbox of radius objectScale/2 centered around the teapot centered
 
     //calculate t value for all three directions
@@ -205,8 +169,7 @@ bool CalcIntersections(Object* obj)
     return false;
 }
 
-
-//**************************************************************Texture***************
+//loads ppm file (for texture)
 GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 {
     GLubyte* img;
@@ -232,6 +195,7 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
     while(c == '#')
     {
         fscanf(fd, "%[^\n] ", b);
+        printf("%s\n",b);
         fscanf(fd, "%c",&c);
     }
     ungetc(c,fd);
@@ -260,160 +224,179 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 
     return img;
 }
-//****************************************************************Texture***************
 
+//handles special keyboard input
 void special(int key, int x, int y)
 {
-    //translation of objects
+    /* OBJECT TRANSLATION */
     if (key == GLUT_KEY_LEFT && glutGetModifiers() == GLUT_ACTIVE_CTRL)
     {
         if (selectedObject != 0)
         {
+            //translate object in -x direction
             selectedObject->setPosition(selectedObject->getPosX()-0.3,
                                         selectedObject->getPosY(),
-                                        selectedObject->getPosZ()); //translate object in -x direction
+                                        selectedObject->getPosZ());
         }
     }
     else if (key == GLUT_KEY_RIGHT && glutGetModifiers() == GLUT_ACTIVE_CTRL)
     {
         if (selectedObject != 0)
         {
+            //translate object in +x direction
             selectedObject->setPosition(selectedObject->getPosX()+0.3,
                                         selectedObject->getPosY(),
-                                        selectedObject->getPosZ()); //translate object in +x direction
+                                        selectedObject->getPosZ());
         }
     }
     else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_CTRL)
     {
         if (selectedObject != 0)
         {
+            //translate object in +z direction
             selectedObject->setPosition(selectedObject->getPosX(),
                                         selectedObject->getPosY(),
-                                        selectedObject->getPosZ()+0.3); //translate object in +z direction
+                                        selectedObject->getPosZ()+0.3);
         }
     }
     else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_CTRL)
     {
         if (selectedObject != 0)
         {
+            //translate object in -z direction
             selectedObject->setPosition(selectedObject->getPosX(),
                                         selectedObject->getPosY(),
-                                        selectedObject->getPosZ()-0.3); //translate object in -z direction
+                                        selectedObject->getPosZ()-0.3);
         }
     }
     else if (key == GLUT_KEY_PAGE_UP && glutGetModifiers() == GLUT_ACTIVE_CTRL)
     {
         if (selectedObject != 0)
         {
+            //translate object in +y direction
             selectedObject->setPosition(selectedObject->getPosX(),
                                         selectedObject->getPosY()+0.3,
-                                        selectedObject->getPosZ()); //translate object in +y direction
+                                        selectedObject->getPosZ());
         }
     }
     else if (key == GLUT_KEY_PAGE_DOWN && glutGetModifiers() == GLUT_ACTIVE_CTRL)
     {
         if (selectedObject != 0 && selectedObject->getPosY() > 0)
         {
+            //translate object in -y direction
             selectedObject->setPosition(selectedObject->getPosX(),
                                         selectedObject->getPosY()-0.3,
-                                        selectedObject->getPosZ()); //translate object in -y direction
+                                        selectedObject->getPosZ());
         }
     }
 
-    //scaling of objects
+    /* OBJECT SCALE */
     else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_SHIFT)
     {
         if (selectedObject != 0 && selectedObject->getScale() < 50)
         {
-            selectedObject->setScale(selectedObject->getScale()+0.1);   //upscale object
+            //upscale object
+            selectedObject->setScale(selectedObject->getScale()+0.1);
         }
     }
     else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_SHIFT)
     {
         if (selectedObject != 0 && selectedObject->getScale() > 0.01)
         {
-            selectedObject->setScale(selectedObject->getScale()-0.1);   //downscale object
+            //downscale object
+            selectedObject->setScale(selectedObject->getScale()-0.1);
         }
     }
 
-    //rotation of objects
+    /* OBJECT ROTATION */
     else if (key == GLUT_KEY_LEFT && glutGetModifiers() == GLUT_ACTIVE_ALT)
     {
         if (selectedObject != 0)
         {
+            //rotate in -x axis
             selectedObject->setOrientation(selectedObject->getOrientationX()-2,
                                            selectedObject->getOrientationY(),
-                                           selectedObject->getOrientationZ());  //rotate in -x axis
+                                           selectedObject->getOrientationZ());
         }
     }
     else if (key == GLUT_KEY_RIGHT && glutGetModifiers() == GLUT_ACTIVE_ALT)
     {
         if (selectedObject != 0)
         {
+            //rotate in +x axis
             selectedObject->setOrientation(selectedObject->getOrientationX()+2,
                                            selectedObject->getOrientationY(),
-                                           selectedObject->getOrientationZ());  //rotate in +x axis
+                                           selectedObject->getOrientationZ());
         }
     }
     else if (key == GLUT_KEY_UP && glutGetModifiers() == GLUT_ACTIVE_ALT)
     {
         if (selectedObject != 0)
         {
+            //rotate in +z axis
             selectedObject->setOrientation(selectedObject->getOrientationX(),
                                            selectedObject->getOrientationY(),
-                                           selectedObject->getOrientationZ()+2);  //rotate in +z axis
+                                           selectedObject->getOrientationZ()+2);
         }
     }
     else if (key == GLUT_KEY_DOWN && glutGetModifiers() == GLUT_ACTIVE_ALT)
     {
         if (selectedObject != 0)
         {
+            //rotate in -z axis
             selectedObject->setOrientation(selectedObject->getOrientationX(),
                                            selectedObject->getOrientationY(),
-                                           selectedObject->getOrientationZ()-2);  //rotate in -z axis
+                                           selectedObject->getOrientationZ()-2);
         }
     }
     else if (key == GLUT_KEY_PAGE_UP && glutGetModifiers() == GLUT_ACTIVE_ALT)
     {
         if (selectedObject != 0)
         {
+            //rotate in +y axis
             selectedObject->setOrientation(selectedObject->getOrientationX(),
                                            selectedObject->getOrientationY()+2,
-                                           selectedObject->getOrientationZ());  //rotate in +y axis
+                                           selectedObject->getOrientationZ());
         }
     }
     else if (key == GLUT_KEY_PAGE_DOWN && glutGetModifiers() == GLUT_ACTIVE_ALT)
     {
         if (selectedObject != 0)
         {
+            //rotate in -y axis
             selectedObject->setOrientation(selectedObject->getOrientationX(),
                                            selectedObject->getOrientationY()-2,
-                                           selectedObject->getOrientationZ());  //rotate in -y axis
+                                           selectedObject->getOrientationZ());
         }
     }
 
-    //camera control
+    /* CAMERA CONTROL */
     else if (key == GLUT_KEY_LEFT)
     {
-        camPos[0] = camPos[0]*cos(0.03)-camPos[2]*sin(0.03);    //rotate around y-axis in positive direction
+        //rotate around y-axis in positive direction
+        camPos[0] = camPos[0]*cos(0.03)-camPos[2]*sin(0.03);
         camPos[2] = camPos[0]*sin(0.03)+camPos[2]*cos(0.03);
     }
     else if (key == GLUT_KEY_RIGHT)
     {
-        camPos[0] = camPos[0]*cos(-0.03)-camPos[2]*sin(-0.03);  //rotate around y-axis in negative direction
+        //rotate around y-axis in negative direction
+        camPos[0] = camPos[0]*cos(-0.03)-camPos[2]*sin(-0.03);
         camPos[2] = camPos[0]*sin(-0.03)+camPos[2]*cos(-0.03);
     }
     else if (key == GLUT_KEY_UP)
     {
-        camPos[0] += camSpeed;      //rotate x-axis in positive direction
+        //rotate x-axis in positive direction
+        camPos[0] += camSpeed;
     }
     else if (key == GLUT_KEY_DOWN)
     {
-        camPos[0] -= camSpeed;      //rotate x-axis in negative direction
+        //rotate x-axis in negative direction
+        camPos[0] -= camSpeed;
     }
     glutPostRedisplay();
 }
 
+//handles keyboard input
 void keyboard(unsigned char key, int x, int y)
 {
     switch (key)
@@ -463,7 +446,7 @@ void keyboard(unsigned char key, int x, int y)
         else
         {
             string fileNameSave = "";
-            bool hasDot;
+            //bool hasDot;
             while (fileNameSave == "")
             {
                 cout << "Enter a file name: ";
@@ -519,38 +502,38 @@ void keyboard(unsigned char key, int x, int y)
     }
     //set current object to current material
     case 'm':
-        selectedObject->storeMaterial(materialCounter);
+        if (selectedObject != 0)
+        {
+            selectedObject->storeMaterial(materialCounter);
+        }
         break;
     //disable texture
     case 'u':
-        glDisable(GL_TEXTURE_2D);
+        if (selectedObject != 0)
+        {
+            selectedObject->setTexture(0);
+        }
         break;
+    //applies texture
     case 'i':
-        img_data = LoadPPM("interface.ppm", &width, &height, &k);
-        glEnable(GL_TEXTURE_2D);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img_data);
-//        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        if (selectedObject != 0)
+        {
+            selectedObject->setTexture(1);
+        }
         break;
+    //applies texture
     case 'o':
-        img_data = LoadPPM("interface.ppm", &width, &height, &k);
-        glEnable(GL_TEXTURE_2D);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img_data);
-//        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        if (selectedObject != 0)
+        {
+            selectedObject->setTexture(2);
+        }
         break;
+    //applies texture
     case 'p':
-        img_data = LoadPPM("interface.ppm", &width, &height, &k);
-        glEnable(GL_TEXTURE_2D);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img_data);
-//        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        if (selectedObject != 0)
+        {
+            selectedObject->setTexture(3);
+        }
         break;
     //set material to redPlastic
     case '1':
@@ -578,6 +561,9 @@ void keyboard(unsigned char key, int x, int y)
         selectedObject = new Object();
         selectedObject->setType(Object::Cube);
         selectedObject->storeMaterial(materialCounter);
+        selectedObject->setTexture1(&myTex[0]);
+        selectedObject->setTexture2(&myTex[1]);
+        selectedObject->setTexture3(&myTex[2]);
         objectList.push_back(selectedObject);
     }
     break;
@@ -587,6 +573,9 @@ void keyboard(unsigned char key, int x, int y)
         selectedObject = new Object();
         selectedObject->setType(Object::Sphere);
         selectedObject->storeMaterial(materialCounter);
+        selectedObject->setTexture1(&myTex[0]);
+        selectedObject->setTexture2(&myTex[1]);
+        selectedObject->setTexture3(&myTex[2]);
         objectList.push_back(selectedObject);
     }
     break;
@@ -596,6 +585,9 @@ void keyboard(unsigned char key, int x, int y)
         selectedObject = new Object();
         selectedObject->setType(Object::Octahedron);
         selectedObject->storeMaterial(materialCounter);
+        selectedObject->setTexture1(&myTex[0]);
+        selectedObject->setTexture2(&myTex[1]);
+        selectedObject->setTexture3(&myTex[2]);
         objectList.push_back(selectedObject);
     }
     break;
@@ -605,6 +597,9 @@ void keyboard(unsigned char key, int x, int y)
         selectedObject = new Object();
         selectedObject->setType(Object::Cone);
         selectedObject->storeMaterial(materialCounter);
+        selectedObject->setTexture1(&myTex[0]);
+        selectedObject->setTexture2(&myTex[1]);
+        selectedObject->setTexture3(&myTex[2]);
         objectList.push_back(selectedObject);
     }
     break;
@@ -614,6 +609,9 @@ void keyboard(unsigned char key, int x, int y)
         selectedObject = new Object();
         selectedObject->setType(Object::Torus);
         selectedObject->storeMaterial(materialCounter);
+        selectedObject->setTexture1(&myTex[0]);
+        selectedObject->setTexture2(&myTex[1]);
+        selectedObject->setTexture3(&myTex[2]);
         objectList.push_back(selectedObject);
         break;
     }
@@ -623,6 +621,9 @@ void keyboard(unsigned char key, int x, int y)
         selectedObject = new Object();
         selectedObject->setType(Object::House);
         selectedObject->storeMaterial(materialCounter);
+        selectedObject->setTexture1(&myTex[0]);
+        selectedObject->setTexture2(&myTex[1]);
+        selectedObject->setTexture3(&myTex[2]);
         objectList.push_back(selectedObject);
         break;
     }
@@ -644,20 +645,62 @@ void init(void)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(45, 1, 1, 1000);
-    //**************************************************************Texture********************************
-    glRasterPos2i(width,0);
-    glPixelZoom(-1, 1);
-    glDrawPixels(width,height,GL_RGB, GL_UNSIGNED_BYTE, img_data);
-    //**************************************************************Texture********************************
 
+    glEnable(GL_DEPTH_TEST);    //enables z buffer
+    glClearColor(1, 1, 1, 0);   //set clear colour to white
+
+    //set material
     setMaterial(0);
 
     //enable backface culling
     glFrontFace(GL_CW);
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
+
+    /* TEXTURE */
+    glEnable(GL_TEXTURE_2D);
+    glGenTextures(3, myTex);
+
+    /* Set the image parameters*/
+    glBindTexture(GL_TEXTURE_2D, myTex[0]);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    /*Get and save image*/
+    image = LoadPPM("interface.ppm", &width, &height, &k);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, image);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    /* Set the image parameters*/
+    glBindTexture(GL_TEXTURE_2D, myTex[1]);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    /*Get and save image*/
+    image2 = LoadPPM("interface.ppm", &width, &height, &k);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, image2);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    /* Set the image parameters*/
+    glBindTexture(GL_TEXTURE_2D, myTex[2]);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    /*Get and save image*/
+    image3 = LoadPPM("interface.ppm", &width, &height, &k);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, image3);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glMatrixMode(GL_TEXTURE);
 }
 
+//adds lights to the scene
 void addLights()
 {
     //set light colours
@@ -693,7 +736,7 @@ void addLights()
     glPopMatrix();
 }
 
-//display method to be recalled upon any changes
+//display method to be recalled upon any change to the scene
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -705,43 +748,40 @@ void display(void)
 
     addLights();
 
+    glFrontFace(GL_CW);     //backface culling
+
     setMaterial(0);
     glPushMatrix();
     glColor3f(0.7,0.7,0.7);
     glTranslatef(0,-1,0);
     glScalef(1,0.01,1);
-    glutSolidCube(100);     //draws plane
+    glutSolidCube(100);     //draws plane (floor)
     glPopMatrix();
 
     glPushMatrix();
     glColor3f(0.5,0.5,0.5);
     glTranslatef(-15,45,0);
     glScalef(0.01,1,1);
-    glutSolidCube(100);     //draws plane
+    glutSolidCube(100);     //draws plane (wall 1)
     glPopMatrix();
 
     glPushMatrix();
     glColor3f(0.3,0.3,0.3);
     glTranslatef(0,45,-15);
     glScalef(1,1,0.01);
-    glutSolidCube(100);     //draws plane
+    glutSolidCube(100);     //draws plane (wall 2)
     glPopMatrix();
 
-    glColor3f(0.5,0.5,0.5);
     //draws all objects
-    glFrontFace(GL_CCW);
-    glEnable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
-    glEnable(GL_TEXTURE_GEN_T);
+    glColor3f(0.5,0.5,0.5);
+    glFrontFace(GL_CCW);            //backface culling direction to CCW
     for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
     {
         Object* objP = *it;
         Object obj = *objP;
         setMaterial(obj.getMaterial());
-        obj.drawObject(objP == selectedObject);
+        obj.drawObject(objP == selectedObject); //draws each object in object list
     }
-    glDisable(GL_TEXTURE_GEN_S); //disable texture coordinate generation
-    glDisable(GL_TEXTURE_GEN_T);
-    glFrontFace(GL_CW);
 
     glutSwapBuffers();
 }
@@ -773,30 +813,37 @@ void printInstructions()
 //save our mouse coords when they change
 void mouse(int btn, int state, int x, int y)
 {
+    //left-click selects object
     if (btn == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
     {
         mouseX = x;
         mouseY = WINDOW_SIZE_HEIGHT - y;
         for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
         {
-            if (CalcIntersections(*it))
+            if (isClicked(*it))
             {
-                selectedObject = *it;
+                selectedObject = *it;   //set selected object if object is clicked
             }
         }
     }
+    //right click deletes object
     else if (btn == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
     {
+        bool deleteObject = false;  //indicates whether an object is clicked for deletion
         mouseX = x;
         mouseY = WINDOW_SIZE_HEIGHT - y;
         for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
         {
-            if (CalcIntersections(*it))
+            if (isClicked(*it))
             {
                 selectedObject = *it;
+                deleteObject = true;
             }
         }
-        objectList.remove(selectedObject);
+        if (deleteObject)
+        {
+            objectList.remove(selectedObject);  //deleted clicked object
+        }
     }
     glutPostRedisplay();
 }
@@ -820,7 +867,7 @@ int main(int argc, char** argv)
 
     glEnable(GL_DEPTH_TEST);
     init();
-    glutMainLoop();                     //starts the event loop
+    glutMainLoop();                         //starts the event loop
 
     return(0);
 }

@@ -42,19 +42,29 @@ public:
     float getOrientationZ();
     float getScale();
     int getMaterial();
+    void setTexture(int);
+    int getTexture();
     void drawObject(bool);
-    void setType(ObjectType);
     int getType();
+    void setType(ObjectType);
     void drawHouse();
+    void setTexture1(GLuint*);
+    void setTexture2(GLuint*);
+    void setTexture3(GLuint*);
 
 private:
     float position[3];
     float orientation[3];
-    float normVec[9][3] = {{0,1,0}, {-1,0,0}, {0,0,-1}, {0,0,1}, {1,0,0}, {-1,1,0}, {0,1,1}, {1,1,0}, {0,1,-1} }; 
+    float normVec[9][3] = {{0,1,0}, {-1,0,0}, {0,0,-1}, {0,0,1}, {1,0,0}, {-1,1,0}, {0,1,1}, {1,1,0}, {0,1,-1} };
     int material;
+    int texture;
     bool intersect;
     float objectScale;
+    GLuint *myTex1;
+    GLuint *myTex2;
+    GLuint *myTex3;
     void initializeNormals();
+    void bindTextures();
     ObjectType type;
 };
 
