@@ -488,6 +488,20 @@ void keyboard(unsigned char key, int x, int y)
                     objectList.clear();
                     selectedObject = 0;
                     objectList = SaveLoadStates::loadState(fileNameLoad);
+
+                    //Potential Fix????????????????????????
+                    for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
+                    {
+                        Object* objP = *it;
+                        Object obj = *objP;
+                        obj.setTexture1(&myTex[0]);
+                        obj.setTexture2(&myTex[1]);
+                        obj.setTexture3(&myTex[2]);
+                        cout << "Testing\n";
+
+                    }
+                    //*****************************************
+                    
                     cout << "File has been loaded!\n";
                     break;
                 }
