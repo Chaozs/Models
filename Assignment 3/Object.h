@@ -29,45 +29,44 @@ class Object
 {
 public:
     enum ObjectType {Cube, Sphere, Octahedron, Cone, Torus, House};
-    Object();   //constructor
-    void setPosition(float, float, float);
-    void setOrientation(float, float, float);
-    void setScale(float);
-    void storeMaterial(int);
-    float getPosX();
-    float getPosY();
-    float getPosZ();
-    float getOrientationX();
-    float getOrientationY();
-    float getOrientationZ();
-    float getScale();
-    int getMaterial();
-    void setTexture(int);
-    int getTexture();
-    void drawObject(bool);
-    int getType();
-    void setType(ObjectType);
-    void setTexture1(GLuint*);
-    void setTexture2(GLuint*);
-    void setTexture3(GLuint*);
+    Object();   // constructor
+    void setPosition(float, float, float); // set position of object
+    void setOrientation(float, float, float); // set orientation of object
+    void setScale(float); // set scale of object
+    void storeMaterial(int); // set material index of object
+    float getPosX(); // get x position of object
+    float getPosY(); // get y positon of object
+    float getPosZ(); // get z position of object
+    float getOrientationX(); // get x orientation
+    float getOrientationY(); // get y orientation
+    float getOrientationZ(); // get z orientation
+    float getScale(); // get scale
+    int getMaterial(); // get material
+    void setTexture(int); // set texture index
+    int getTexture(); // get texture index
+    void drawObject(bool); // draw object
+    int getType(); // get object type index
+    void setType(ObjectType); // set object type 
+    void setTexture1(GLuint*); // store texture1
+    void setTexture2(GLuint*); // store texture2 
+    void setTexture3(GLuint*); // store texture 35
 
 private:
-    float position[3];
-    float orientation[3];
-    float normVec[9][3] = {{0,1,0}, {-1,0,0}, {0,0,-1}, {0,0,1}, {1,0,0}, {-1,1,0}, {0,1,1}, {1,1,0}, {0,1,-1} };
-    int material;
-    int texture;
-    bool intersect;
-    float objectScale;
-    GLuint *myTex1;
-    GLuint *myTex2;
-    GLuint *myTex3;
-    void drawHouse();
-    void drawHouseWireFrame();
-    void initializeNormals();
-    void bindTextures();
-    void unbindTextures();
-    ObjectType type;
+    float position[3]; // position of object
+    float orientation[3]; // orientation of object
+    float normVec[9][3] = {{0,1,0}, {-1,0,0}, {0,0,-1}, {0,0,1}, 
+    {1,0,0}, {-1,1,0}, {0,1,1}, {1,1,0}, {0,1,-1} }; //normal vector for custom shape
+    int material; // material index
+    int texture; // texture index
+    bool intersect; // whether or not raypicking intersects
+    float objectScale; //object scale
+    GLuint *myTex1; // storing texture1
+    GLuint *myTex2; // storing texture2
+    GLuint *myTex3; // storing texture3
+    void drawHouse(bool); // draw custom shape house, where if boolean is true, wireframe is drawn only
+    void bindTextures(); // bind textures 
+    void unbindTextures(); // unbind textures
+    ObjectType type; // the object type
 };
 
 #endif

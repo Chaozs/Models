@@ -23,14 +23,14 @@ Object::Object()
     //sets initial scale to unit size
     objectScale = 1;
 }
-void Object::initializeNormals()
-{
 
-}
-
-//draws custom house object
-void Object::drawHouse()
+//draws custom house object. If wireFrame is true, only draw wireframe
+void Object::drawHouse(bool wireFrame)
 {
+	if(wireFrame){
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+
     glBegin(GL_TRIANGLES);
 
     //bottom
@@ -88,8 +88,8 @@ void Object::drawHouse()
     glVertex3f(1,0,-1);
     glVertex3f(1,0,1);
 
+    //draw triangle part of house shape
     glNormal3fv(normVec[5]);
-
     glVertex3f(-1,0,-1);
     glVertex3f(-1,0,1);
     glVertex3f(0,1,0);
@@ -110,94 +110,10 @@ void Object::drawHouse()
     glVertex3f(0,1,0);
 
     glEnd();
-}
 
-//draws custom house object wireframe
-void Object::drawHouseWireFrame()
-{
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(-1,-1,-1);
-    glVertex3f(-1,-1,1);
-    glVertex3f(1,-1,1);
-    glEnd();
-
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(-1,-1,-1);
-    glVertex3f(1,-1,1);
-    glVertex3f(1,-1,-1);
-    glEnd();
-
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(-1,-1,1);
-    glVertex3f(-1,0,-1);
-    glVertex3f(-1,-1,-1);
-    glEnd();
-
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(-1,-1,1);
-    glVertex3f(-1,0,1);
-    glVertex3f(-1,0,-1);
-    glEnd();
-
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(1,-1,-1);
-    glVertex3f(-1,-1,-1);
-    glVertex3f(-1,0,-1);
-    glEnd();
-
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(1,-1,-1);
-    glVertex3f(-1,0,-1);
-    glVertex3f(1,0,-1);
-    glEnd();
-
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(1,-1,1);
-    glVertex3f(1,0,1);
-    glVertex3f(-1,0,1);
-    glEnd();
-
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(1,-1,1);
-    glVertex3f(-1,0,1);
-    glVertex3f(-1,-1,1);
-    glEnd();
-
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(1,-1,-1);
-    glVertex3f(1,0,-1);
-    glVertex3f(1,-1,1);
-    glEnd();
-
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(1,-1,1);
-    glVertex3f(1,0,-1);
-    glVertex3f(1,0,1);
-    glEnd();
-
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(-1,0,-1);
-    glVertex3f(-1,0,1);
-    glVertex3f(0,1,0);
-    glEnd();
-
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(-1,0,1);
-    glVertex3f(1,0,1);
-    glVertex3f(0,1,0);
-    glEnd();
-
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(1,0,1);
-    glVertex3f(1,0,-1);
-    glVertex3f(0,1,0);
-    glEnd();
-
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(1,0,-1);
-    glVertex3f(-1,0,-1);
-    glVertex3f(0,1,0);
-    glEnd();
+    if(wireFrame){
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
 }
 
 void Object::setType(ObjectType t)
@@ -373,7 +289,7 @@ void Object::drawObject(bool isSelected)
         glPushMatrix();
         glScalef(objectScale/2, objectScale/2, objectScale/2);
         bindTextures();
-        drawHouse();
+        drawHouse(false);
         unbindTextures();
         glPopMatrix();
         break;
@@ -412,7 +328,7 @@ void Object::drawObject(bool isSelected)
         case House:
             glPushMatrix();
             glScalef(objectScale/2, objectScale/2, objectScale/2);
-            drawHouseWireFrame();
+            drawHouse(true);
             glPopMatrix();
             break;
         }
@@ -420,21 +336,25 @@ void Object::drawObject(bool isSelected)
     glPopMatrix();
 }
 
+//stores texture to myTex1
 void Object::setTexture1(GLuint* texture1)
 {
     myTex1 = texture1;
 }
 
+//stores texture to myTex2
 void Object::setTexture2(GLuint* texture2)
 {
     myTex2 = texture2;
 }
 
+//stores texture to myTex3
 void Object::setTexture3(GLuint* texture3)
 {
     myTex3 = texture3;
 }
 
+//bind myTex1 2 and 3
 void Object::bindTextures()
 {
     if (texture != 0)
@@ -456,6 +376,7 @@ void Object::bindTextures()
     }
 }
 
+//unbind all textures
 void Object::unbindTextures()
 {
     glDisable(GL_TEXTURE_GEN_S);    //enable texture coordinate generation

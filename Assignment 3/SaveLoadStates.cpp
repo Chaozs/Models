@@ -7,15 +7,16 @@ Thien Trandinh / trandit / 001420634
 
 #include "SaveLoadStates.h"
 
-
+//saves objectList to a CSV file for loading
 void SaveLoadStates::saveState(string fileName, list<Object*> objectList)
 {
-    fileName = fileName + ".csv"; //creates csv file with user inputted name
+    fileName = fileName + ".csv"; //creates csv save file with file name fileName
     const char *fileChar =  fileName.c_str(); // changes string to char
 
     ofstream saveState;
     saveState.open (fileChar);
 
+    //stores property for each object in objectList as a line seperated by commas
     for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
     {
         Object* objP = *it;
@@ -25,10 +26,10 @@ void SaveLoadStates::saveState(string fileName, list<Object*> objectList)
         saveState << "," << obj.getOrientationX() << "," <<  obj.getOrientationY() << "," <<  obj.getOrientationZ();
         saveState << "," << obj.getScale() << "," << obj.getTexture() <<"\n";
     }
-
     saveState.close();
 }
 
+//loads objectList from CSV file
 list<Object*> SaveLoadStates::loadState(string fileName)
 {
     const char *fileChar =  fileName.c_str();// changes string to char
@@ -97,9 +98,8 @@ list<Object*> SaveLoadStates::loadState(string fileName)
             tempObj->setOrientation(oriX, oriY, oriZ);
             tempObj->setScale(scale);
             objectList.push_back(tempObj);
-
         }
     }
     loadState.close();
-    return objectList;
+    return objectList; //return the loaded list
 }

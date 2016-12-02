@@ -21,11 +21,11 @@ Thien Trandinh / trandit / 001420634
 using namespace std;
 //Material structure
 struct MaterialStruct
-{
-    float ambient[4];
-    float diffuse[4];
-    float specular[4];
-    float shininess;
+{	
+    float ambient[4]; //material ambience
+    float diffuse[4]; //material diffusement
+    float specular[4]; //material specular 
+    float shininess; //material shininess
 };
 
 //list 5 different materials

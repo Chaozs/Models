@@ -56,6 +56,7 @@ GLubyte* image2;
 GLubyte* image3;
 GLuint myTex[3];
 
+//method sets the current to the specified material ENUM
 void setMaterial(int i)
 {
     MaterialStruct current;
@@ -136,7 +137,7 @@ bool isClicked(Object* obj)
     ptZ[1] = R0[1] + tZ * Rd[1];
     ptZ[2] = obj->getPosZ();
 
-    //use it to see if this point is inside a box centered at the object location
+    //check each plane (XY, ZY, XZ)
     if(ptX[0] > obj->getPosX() - obj->getScale()/2 &&
             ptX[0] < obj->getPosX() + obj->getScale()/2 &&
             ptX[1] > obj->getPosY() - obj->getScale()/2 &&
@@ -448,21 +449,22 @@ void keyboard(unsigned char key, int x, int y)
         else
         {
             string fileNameSave = "";
-            //bool hasDot;
+            
             while (fileNameSave == "")
             {
-                cout << "Enter a file name: ";
+                cout << "Enter file name for save file "; //ask for save file name
                 cin >> fileNameSave;
 
-                if (fileNameSave.find('.') != string::npos)
+                if (fileNameSave.find('.') != string::npos) //checks that file name doesnt contain '.'
                 {
                     fileNameSave = "";
-                    cout << "invalid file name.";
+                    cout << "Please enter a valid file name";
                 }
                 else
                 {
+                	//passes in save file name and object list into saveState
                     SaveLoadStates::saveState(fileNameSave, objectList);
-                    cout << "File has been saved!\n";
+                    cout << "Save Complete!\n";
                     break;
                 }
             }
@@ -473,23 +475,22 @@ void keyboard(unsigned char key, int x, int y)
         string fileNameLoad = "";
         while (fileNameLoad == "")
         {
-            cout << "Which file would you like to load?: ";
+            cout << "Please enter the name of the save file "; //ask for save file name
             cin >> fileNameLoad;
-            if (fileNameLoad.find('.') != string::npos)
+            if (fileNameLoad.find('.') != string::npos) //checks that file name doesnt contain '.'
             {
                 fileNameLoad = "";
-                cout << "Invalid file name. Try again and make sure you haven't added any '.'s\n";
+                cout << "invalid file name \n";
             }
             else
             {
                 fileNameLoad = fileNameLoad + ".csv";
                 if (FILE *file = fopen(fileNameLoad.c_str(), "r"))
                 {
-
                     fclose(file);
-                    objectList.clear();
-                    selectedObject = 0;
-                    objectList = SaveLoadStates::loadState(fileNameLoad);
+                    objectList.clear(); //empty list before loading
+                    selectedObject = 0; //unselect all objects
+                    objectList = SaveLoadStates::loadState(fileNameLoad); //loads the objectList stored in save file
 
                     //sets texture for each object loaded
                     for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
@@ -503,9 +504,9 @@ void keyboard(unsigned char key, int x, int y)
                     cout << "File has been loaded!\n";
                     break;
                 }
-                else
+                else //if no file is found with given name
                 {
-                    cout << "File doesn't exist\n";
+                    cout << "File not found \n";
                     break;
                 }
             }
@@ -707,7 +708,6 @@ void init(void)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
                  GL_UNSIGNED_BYTE, image3);
     glBindTexture(GL_TEXTURE_2D, 0);
-
     glMatrixMode(GL_TEXTURE);
 }
 
@@ -761,12 +761,13 @@ void display(void)
 
     glFrontFace(GL_CW);     //backface culling
 
+    //draws plane (floor)
     setMaterial(0);
     glPushMatrix();
     glColor3f(0.7,0.7,0.7);
     glTranslatef(0,-1,0);
     glScalef(1,0.01,1);
-    glutSolidCube(100);     //draws plane (floor)
+    glutSolidCube(100);     
     glPopMatrix();
 
     //draws all objects
