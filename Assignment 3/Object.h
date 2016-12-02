@@ -54,7 +54,7 @@ public:
 private:
     float position[3];      //position of object
     float orientation[3];   //orientation of object
-    float normVec[9][3] = {{0,1,0}, {-1,0,0}, {0,0,-1}, {0,0,1},
+    float normVec[9][3] = {{0,-1,0}, {-1,0,0}, {0,0,-1}, {0,0,1},
     {1,0,0}, {-1,1,0}, {0,1,1}, {1,1,0}, {0,1,-1} }; //normal vector for custom shape
     int material;           //material index
     int texture;            //texture index; 1 = interface, 2 = marble, 3 = snail

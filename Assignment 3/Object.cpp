@@ -37,13 +37,14 @@ void Object::drawHouse(bool wireFrame)
     //bottom
     glNormal3fv(normVec[0]);
 
-    glVertex3f(-1,-1,-1);
+    glVertex3f(1,-1,1);
     glVertex3f(-1,-1,1);
-    glVertex3f(1,-1,1);
-
     glVertex3f(-1,-1,-1);
-    glVertex3f(1,-1,1);
+
+    
     glVertex3f(1,-1,-1);
+    glVertex3f(1,-1,1);
+    glVertex3f(-1,-1,-1);
 
     //front right
     glNormal3fv(normVec[1]);
