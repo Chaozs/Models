@@ -25,29 +25,27 @@ Thien Trandinh / trandit / 001420634
 #include "Object.h"
 #include "MaterialStruct.h"
 #include "SaveLoadStates.h"
-#define BOUND_OFFSET 0.55
 
 /* CAMERA */
-float camPos[] = {10, 20, 10};	            //initial camera location
-float camUp[] = {0, 1, 0};                  //up vector of the camera
-float camTarget[] = {0, 0, 0};	            //point camera is looking at
-float camSpeed = 0.1f;
+float camPos[] = {10, 20, 10};          //initial camera location
+float camUp[] = {0, 1, 0};              //up vector of the camera
+float camTarget[] = {0, 0, 0};          //point camera is looking at
 
 /* LIGHTING */
-float light0Pos[] = {-5, 3, 0, 1};          //initial light0 position
-float light1Pos[] = {5, 3, 0, 1};           //initial light1 positon
+float light0Pos[] = {-5, 3, 0, 1};      //initial light0 position
+float light1Pos[] = {5, 3, 0, 1};       //initial light1 positon
 
 /* MATERIAL */
-int materialCounter = 1;                    //default material is brass
+int materialCounter = 1;                //default material is brass
 
 /* OBJECTS */
-list<Object*> objectList;                   //list of object addresses
-Object* selectedObject;                     //pointer to currently selected object
+list<Object*> objectList;               //list of object addresses
+Object* selectedObject;                 //pointer to currently selected object
 
 /* WINDOW */
 int WINDOW_SIZE_HEIGHT = 800;
 int WINDOW_SIZE_WIDTH = 800;
-int mouseX = 0, mouseY = 0;                 //global vars to save mouse x/y coord
+int mouseX = 0, mouseY = 0;             //global vars to save mouse x/y coord
 
 /* TEXTURE */
 int height, width, k;
@@ -56,7 +54,7 @@ GLubyte* image2;
 GLubyte* image3;
 GLuint myTex[3];
 
-//method sets the current to the specified material ENUM
+/* Sets the current to the specified material Enum */
 void setMaterial(int i)
 {
     MaterialStruct current;
@@ -84,7 +82,7 @@ void setMaterial(int i)
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, current.shininess);
 }
 
-//calculate whether an intersection of our ray hits the specified object
+/* Calculates whether an intersection of our ray hits the specified object */
 bool isClicked(Object* obj)
 {
     /* CONSTRUCT RAY */
@@ -170,7 +168,7 @@ bool isClicked(Object* obj)
     return false;
 }
 
-//loads ppm file (for texture)
+/* Loads PPM file (for texture) */
 GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
 {
     GLubyte* img;
@@ -226,7 +224,7 @@ GLubyte* LoadPPM(char* file, int* width, int* height, int* max)
     return img;
 }
 
-//handles special keyboard input
+/* handles special keyboard input */
 void special(int key, int x, int y)
 {
     /* OBJECT TRANSLATION */
@@ -399,7 +397,7 @@ void special(int key, int x, int y)
     glutPostRedisplay();
 }
 
-//handles keyboard input
+/* handles keyboard input */
 void keyboard(unsigned char key, int x, int y)
 {
     switch (key)
@@ -410,49 +408,49 @@ void keyboard(unsigned char key, int x, int y)
         break;
     //detect shift key (capital letters)
     case 'A':
-        light1Pos[0]-=2;       //move light1 left
+        light1Pos[0]-=0.2;        //move light1 left
         break;
     case 'D':
-        light1Pos[0]+=2;       //move light1 right
+        light1Pos[0]+=0.2;        //move light1 right
         break;
     case 'W':
-        light1Pos[1]+=2;       //move light1 up
+        light1Pos[1]+=0.2;        //move light1 up
         break;
     case 'S':
-        light1Pos[1]-=2;       //move light1 down
+        light1Pos[1]-=0.2;        //move light1 down
         break;
     case 'r':
         objectList.clear();     // clears the object list
     case 'a':
         if (glutGetModifiers() & GLUT_ACTIVE_ALT)
         {
-            light0Pos[0]-=2;    //move light0 left
+            light0Pos[0]-=0.2;    //move light0 left
         }
         break;
     case 'd':
         if (glutGetModifiers() & GLUT_ACTIVE_ALT)
         {
-            light0Pos[0]+=2;    //move light0 right
+            light0Pos[0]+=0.2;    //move light0 right
         }
         break;
     case 'w':
         if (glutGetModifiers() & GLUT_ACTIVE_ALT)
         {
-            light0Pos[1]+=2;    //move light0 up
+            light0Pos[1]+=0.2;    //move light0 up
         }
         break;
     case 's':
         if (glutGetModifiers() & GLUT_ACTIVE_ALT)
         {
-            light0Pos[1]-=2;    //move light0 down
+            light0Pos[1]-=0.2;    //move light0 down
         }
         else
         {
             string fileNameSave = "";
-            
+
             while (fileNameSave == "")
             {
-                cout << "Enter file name for save file "; //ask for save file name
+                cout << "Enter file name for save file ";   //ask for save file name
                 cin >> fileNameSave;
 
                 if (fileNameSave.find('.') != string::npos) //checks that file name doesnt contain '.'
@@ -462,7 +460,7 @@ void keyboard(unsigned char key, int x, int y)
                 }
                 else
                 {
-                	//passes in save file name and object list into saveState
+                    //passes in save file name and object list into saveState
                     SaveLoadStates::saveState(fileNameSave, objectList);
                     cout << "Save Complete!\n";
                     break;
@@ -475,9 +473,9 @@ void keyboard(unsigned char key, int x, int y)
         string fileNameLoad = "";
         while (fileNameLoad == "")
         {
-            cout << "Please enter the name of the save file "; //ask for save file name
+            cout << "Please enter the name of the save file ";  //ask for save file name
             cin >> fileNameLoad;
-            if (fileNameLoad.find('.') != string::npos) //checks that file name doesnt contain '.'
+            if (fileNameLoad.find('.') != string::npos)         //checks that file name doesnt contain '.'
             {
                 fileNameLoad = "";
                 cout << "invalid file name \n";
@@ -488,9 +486,9 @@ void keyboard(unsigned char key, int x, int y)
                 if (FILE *file = fopen(fileNameLoad.c_str(), "r"))
                 {
                     fclose(file);
-                    objectList.clear(); //empty list before loading
-                    selectedObject = 0; //unselect all objects
-                    objectList = SaveLoadStates::loadState(fileNameLoad); //loads the objectList stored in save file
+                    objectList.clear();     //empty list before loading
+                    selectedObject = 0;     //unselect all objects
+                    objectList = SaveLoadStates::loadState(fileNameLoad);   //loads the objectList stored in save file
 
                     //sets texture for each object loaded
                     for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
@@ -504,7 +502,7 @@ void keyboard(unsigned char key, int x, int y)
                     cout << "File has been loaded!\n";
                     break;
                 }
-                else //if no file is found with given name
+                else    //if no file is found with given name
                 {
                     cout << "File not found \n";
                     break;
@@ -645,12 +643,14 @@ void keyboard(unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
-//initialize
+/* Initialize */
 void init(void)
 {
-    glClearColor(0, 0, 0, 0);
+    glClearColor(0, 0, 0, 0);       //set clear colour to black
 
-    glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_COLOR_MATERIAL);    //enable colour material
+
+    //enable lighting
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
@@ -711,7 +711,7 @@ void init(void)
     glMatrixMode(GL_TEXTURE);
 }
 
-//adds lights to the scene
+/* Adds lights to the scene */
 void addLights()
 {
     //set light colours
@@ -747,7 +747,7 @@ void addLights()
     glPopMatrix();
 }
 
-//display method to be recalled upon any change to the scene
+/* display method to be recalled upon any change to the scene */
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -757,9 +757,9 @@ void display(void)
     //set camera position and direction
     gluLookAt(camPos[0], camPos[1], camPos[2], camTarget[0], camTarget[1], camTarget[2], camUp[0], camUp[1], camUp[2]);
 
-    addLights();
+    addLights();            //add lights
 
-    glFrontFace(GL_CW);     //backface culling
+    glFrontFace(GL_CW);     //backface culling (clockwise)
 
     //draws plane (floor)
     setMaterial(0);
@@ -767,12 +767,12 @@ void display(void)
     glColor3f(0.7,0.7,0.7);
     glTranslatef(0,-1,0);
     glScalef(1,0.01,1);
-    glutSolidCube(100);     
+    glutSolidCube(100);
     glPopMatrix();
 
     //draws all objects
-    glColor3f(0.5,0.5,0.5);
-    glFrontFace(GL_CCW);            //backface culling direction to CCW
+    glColor3f(0.5,0.5,0.5);         //set all objects default colour to grey
+    glFrontFace(GL_CCW);            //backface culling (counterclockwise)
     for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
     {
         Object* objP = *it;
@@ -791,6 +791,7 @@ void printInstructions()
     cout << "Susan Yuen / yuens2 / 001416198" << endl;
     cout << "Thien Trandinh / trandit / 001420634" << endl;
     cout << "* Note: CAPS LOCK must be turned off for the commands to behave correctly" << endl << endl;
+    cout << "* KEYS 6 to 0 = creates a cube, sphere, octahedron, cone, torus respectively" << endl;
     cout << "* ARROW KEYS = control camera movement" << endl;
     cout << "* CTRL + ARROW KEYS/PAGE UP/PAGE DOWN = control translation of currently selected object" << endl;
     cout << "* SHIFT + UP ARROW/DOWN ARROW = manipulate scale of currently selected object" << endl;
@@ -801,14 +802,14 @@ void printInstructions()
     cout << "* s = saves the current object scene as a .txt file" << endl;
     cout << "* l = loads the object scene at specified .txt file" << endl;
     cout << "* r = clears the scene" << endl;
-    cout << "* KEYS 1 to 5 = changes current drawing material" << endl;
     cout << "* m = applies current drawing material to selected object" << endl;
-    cout << "* KEYS 6 to 0 = creates a cube, sphere, octahedron, cone, torus respectively" << endl;
+    cout << "* KEYS 1 to 5 = changes current drawing material" << endl;
     cout << "* u = disables textures" << endl;
-    cout << "* i, o, p = enables various textures; where i=interface, o=marble, p=snail" << endl << endl;
+    cout << "* EXTRA FEATURE: y = creates custom object (house)" << endl;
+    cout << "* EXTRA BONUS FEATURE: i, o, p = enables various textures; where i=interface, o=marble, p=snail" << endl << endl;
 }
 
-//save our mouse coords when they change
+/* save our mouse coords when they change */
 void mouse(int btn, int state, int x, int y)
 {
     //left-click selects object
@@ -827,7 +828,7 @@ void mouse(int btn, int state, int x, int y)
     //right click deletes object
     else if (btn == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
     {
-        bool deleteObject = false;  //indicates whether an object is clicked for deletion
+        bool deleteObject = false;      //indicates whether an object is clicked for deletion
         mouseX = x;
         mouseY = WINDOW_SIZE_HEIGHT - y;
         for(list<Object*>::iterator it=objectList.begin(); it != objectList.end(); ++it)
@@ -846,12 +847,12 @@ void mouse(int btn, int state, int x, int y)
     glutPostRedisplay();
 }
 
-//main method
+/* main method */
 int main(int argc, char** argv)
 {
     printInstructions();
 
-    glutInit(&argc, argv);              //starts up GLUT
+    glutInit(&argc, argv);                  //starts up GLUT
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
     glutInitWindowSize(800, 800);

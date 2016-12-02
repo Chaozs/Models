@@ -6,12 +6,10 @@
 Susan Yuen / yuens2 / 001416198
 Thien Trandinh / trandit / 001420634
 
+* Note: CAPS LOCK must be turned off for the commands to behave correctly.
+- Raypicking should work perfectly on a 1920x1080 resolution monitor.
+- Raypicking varies depending on resolution (as we discussed during tutorial with you on Dec 1).
 
-
-
-- Raypicking works perfectly for XY and ZY plane, and sometimes on XZ plane on a 1920x1080 resolution monitor.
-- EXTRA FEATURES:
-	-Custom shape with calculated normals - "house" shape (click y to create this shape)
-	-Texture feature (click u,i or o to apply texture)
-	
-
+* EXTRA FEATURES *
+	- Custom shape with calculated normals - "house" shape (press 'y' to create this shape)
+	- Texture feature (click 'i', 'o', 'p' to apply texture; press 'u' to remove texture)

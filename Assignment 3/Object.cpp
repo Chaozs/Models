@@ -27,9 +27,10 @@ Object::Object()
 //draws custom house object. If wireFrame is true, only draw wireframe
 void Object::drawHouse(bool wireFrame)
 {
-	if(wireFrame){
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
+    if(wireFrame)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
 
     glBegin(GL_TRIANGLES);
 
@@ -111,9 +112,10 @@ void Object::drawHouse(bool wireFrame)
 
     glEnd();
 
-    if(wireFrame){
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
+    if(wireFrame)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
 }
 
 void Object::setType(ObjectType t)
@@ -251,40 +253,46 @@ void Object::drawObject(bool isSelected)
     glColor3f(0.5, 0.5, 0.5);
     switch(type)
     {
+    //draws unit length cube
     case Cube:
         bindTextures();
-        glutSolidCube(objectScale);             //draws unit length cube
+        glutSolidCube(objectScale);
         unbindTextures();
         break;
+    //draws unit length sphere
     case Sphere:
         bindTextures();
-        glutSolidSphere(objectScale/2, 16, 16);   //draws unit length sphere
+        glutSolidSphere(objectScale/2, 16, 16);
         unbindTextures();
         break;
+    //draws unit length octahedron
     case Octahedron:
         glPushMatrix();
         glScalef(objectScale/2, objectScale/2, objectScale/2);
         bindTextures();
-        glutSolidOctahedron();                  //draws unit length octahedron
+        glutSolidOctahedron();
         unbindTextures();
         glPopMatrix();
         break;
+    //draws unit length cone
     case Cone:
         glPushMatrix();
         glTranslatef(0, 0, -objectScale/2);
         bindTextures();
-        glutSolidCone(objectScale/2, objectScale, 16, 16);    //draws unit length cone
+        glutSolidCone(objectScale/2, objectScale, 16, 16);
         unbindTextures();
         glPopMatrix();
         break;
+    //draws unit length torus
     case Torus:
         glPushMatrix();
         glScalef(1, 1, 3);
         bindTextures();
-        glutSolidTorus(objectScale/3-objectScale/6, objectScale/3, 16, 16);     //draws unit length torus
+        glutSolidTorus(objectScale/3-objectScale/6, objectScale/3, 16, 16);
         unbindTextures();
         glPopMatrix();
         break;
+    //draws unit length house
     case House:
         glPushMatrix();
         glScalef(objectScale/2, objectScale/2, objectScale/2);
@@ -298,33 +306,39 @@ void Object::drawObject(bool isSelected)
     //draws wireframe for selected object
     if (isSelected)
     {
-        glColor3f(1, 0, 0);
+        glColor3f(1, 0, 0); //color wireframe red
         switch(type)
         {
+        //draws unit length cube
         case Cube:
-            glutWireCube(objectScale);             //draws unit length cube
+            glutWireCube(objectScale);
             break;
+        //draws unit length sphere
         case Sphere:
-            glutWireSphere(objectScale/2, 16, 16);   //draws unit length sphere
+            glutWireSphere(objectScale/2, 16, 16);
             break;
+        //draws unit length octahedron
         case Octahedron:
             glPushMatrix();
             glScalef(objectScale/2, objectScale/2, objectScale/2);
-            glutWireOctahedron();                  //draws unit length octahedron
+            glutWireOctahedron();
             glPopMatrix();
             break;
+        //draws unit length cone
         case Cone:
             glPushMatrix();
             glTranslatef(0, 0, -objectScale/2);
-            glutWireCone(objectScale/2, objectScale, 16, 16);    //draws unit length cone
+            glutWireCone(objectScale/2, objectScale, 16, 16);
             glPopMatrix();
             break;
+        //draws unit length torus
         case Torus:
             glPushMatrix();
             glScalef(1, 1, 3);
-            glutWireTorus(objectScale/3-objectScale/6, objectScale/3, 16, 16);     //draws unit length torus
+            glutWireTorus(objectScale/3-objectScale/6, objectScale/3, 16, 16);
             glPopMatrix();
             break;
+        //draws unit length house
         case House:
             glPushMatrix();
             glScalef(objectScale/2, objectScale/2, objectScale/2);
@@ -354,7 +368,7 @@ void Object::setTexture3(GLuint* texture3)
     myTex3 = texture3;
 }
 
-//bind myTex1 2 and 3
+//binds texture to shape; called before glutSolid____ or drawHouse()
 void Object::bindTextures()
 {
     if (texture != 0)
@@ -376,10 +390,10 @@ void Object::bindTextures()
     }
 }
 
-//unbind all textures
+//unbind all textures; called after glutSolid_____ or drawHouse()
 void Object::unbindTextures()
 {
     glDisable(GL_TEXTURE_GEN_S);    //enable texture coordinate generation
     glDisable(GL_TEXTURE_GEN_T);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);    //unbind texture
 }

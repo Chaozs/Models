@@ -31,8 +31,8 @@ using namespace std;
 class SaveLoadStates
 {
 public:
-    static void saveState(string, list<Object*>);  //save list of objects to a CSV file
-    static list<Object*> loadState(string); //loads list of objects stored from CSV file
+    static void saveState(string, list<Object*>);   //save list of objects to a CSV file
+    static list<Object*> loadState(string);         //loads list of objects stored from CSV file
 };
 
 #endif
