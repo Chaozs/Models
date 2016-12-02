@@ -50,12 +50,12 @@ public:
 private:
     float position[3];
     float orientation[3];
+    float normVec[9][3] = {{0,1,0}, {1,0,0}, {0,0,-1}, {0,0,1}, {1,0,0}, {-1,1,0}, {0,1,1}, {1,1,0}, {0,1,-1} }; 
     int material;
     bool intersect;
     float objectScale;
+    void initializeNormals();
     ObjectType type;
-    void buildNormal(float, float, float, int);
-    float normVec[9][3]; //normal vector for each x,z
 };
 
 #endif
